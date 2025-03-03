@@ -62,7 +62,7 @@ const Index: React.FC = () => {
                 key={index}
                 className={`glass-card p-5 flex items-start space-x-4 section-animation ${feature.delay}`}
               >
-                <div className="bg-gradient-to-br from-ninja-red to-ninja-black p-3 rounded-xl shadow-lg">
+                <div className="bg-gradient-to-br from-ninja-blue to-ninja-orange p-3 rounded-xl shadow-lg">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <div>
