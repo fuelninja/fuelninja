@@ -1,13 +1,16 @@
+
 import React, { useState, useRef, useEffect } from 'react';
 import { Car, ChevronDown } from 'lucide-react';
 
 interface CarInfoInputProps {
-  onChange: (make: string, model: string) => void;
+  onChange: (make: string, model: string, color: string, year: string) => void;
 }
 
 const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
   const [make, setMake] = useState<string>('');
   const [model, setModel] = useState<string>('');
+  const [color, setColor] = useState<string>('');
+  const [year, setYear] = useState<string>('');
   const [showMakes, setShowMakes] = useState<boolean>(false);
   const [showModels, setShowModels] = useState<boolean>(false);
   const [filteredMakes, setFilteredMakes] = useState<string[]>([]);
@@ -33,6 +36,16 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
   
   const defaultModels = ['Base', 'Sport', 'Premium', 'Limited', 'Touring', 'GT', 'SE', 'LE', 'XLE', 'XSE'];
   
+  // Common car colors
+  const carColors = [
+    'Black', 'White', 'Silver', 'Gray', 'Red', 'Blue', 'Green', 'Yellow', 'Orange', 
+    'Brown', 'Gold', 'Beige', 'Burgundy', 'Purple', 'Pink', 'Bronze', 'Champagne'
+  ];
+  
+  // Generate years from current year back to 1990
+  const currentYear = new Date().getFullYear();
+  const years = Array.from({ length: currentYear - 1989 }, (_, i) => (currentYear - i).toString());
+  
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (makeRef.current && !makeRef.current.contains(event.target as Node)) {
@@ -49,6 +62,11 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
     };
   }, []);
   
+  useEffect(() => {
+    // Update parent component whenever any field changes
+    onChange(make, model, color, year);
+  }, [make, model, color, year, onChange]);
+  
   const handleMakeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const input = e.target.value;
     setMake(input);
@@ -63,8 +81,6 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
       setFilteredMakes([]);
       setShowMakes(false);
     }
-    
-    onChange(input, model);
   };
   
   const handleModelChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,21 +98,25 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
       setFilteredModels([]);
       setShowModels(false);
     }
-    
-    onChange(make, input);
+  };
+  
+  const handleColorChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setColor(e.target.value);
+  };
+  
+  const handleYearChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setYear(e.target.value);
   };
   
   const selectMake = (selectedMake: string) => {
     setMake(selectedMake);
     setModel('');
     setShowMakes(false);
-    onChange(selectedMake, '');
   };
   
   const selectModel = (selectedModel: string) => {
     setModel(selectedModel);
     setShowModels(false);
-    onChange(make, selectedModel);
   };
   
   const handleMakeFocus = () => {
@@ -197,6 +217,44 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
               ))}
             </div>
           )}
+        </div>
+
+        <div>
+          <label htmlFor="car-color" className="block text-sm font-medium text-gray-700 mb-1">
+            Car Color
+          </label>
+          <select
+            id="car-color"
+            value={color}
+            onChange={handleColorChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-ninja-orange focus:border-ninja-orange transition-colors"
+          >
+            <option value="">Select a color</option>
+            {carColors.map((colorOption, index) => (
+              <option key={index} value={colorOption}>
+                {colorOption}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label htmlFor="car-year" className="block text-sm font-medium text-gray-700 mb-1">
+            Car Year
+          </label>
+          <select
+            id="car-year"
+            value={year}
+            onChange={handleYearChange}
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-ninja-orange focus:border-ninja-orange transition-colors"
+          >
+            <option value="">Select year</option>
+            {years.map((yearOption) => (
+              <option key={yearOption} value={yearOption}>
+                {yearOption}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
       

@@ -17,11 +17,11 @@ const HelpSupport: React.FC = () => {
     },
     {
       question: "What areas do you service?",
-      answer: "We currently service the Houston area and surrounding cities. We're continuously expanding our service area to reach more customers."
+      answer: "We service the Houston area and surrounding cities."
     },
     {
       question: "What are your hours of operation?",
-      answer: "We operate 7 days a week from 6:00 AM to 10:00 PM. Delivery times may vary based on demand and weather conditions."
+      answer: "We operate 7 days a week from 8:00 AM to 10:00 PM. Delivery times may vary based on demand and weather conditions."
     },
     {
       question: "How much does delivery cost?",

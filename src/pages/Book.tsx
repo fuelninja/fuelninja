@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -19,6 +20,8 @@ const Book: React.FC = () => {
     deliveryTime: new Date(),
     carMake: '',
     carModel: '',
+    carColor: '',
+    carYear: '',
   });
   
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -46,11 +49,13 @@ const Book: React.FC = () => {
     });
   };
   
-  const handleCarInfoChange = (make: string, model: string) => {
+  const handleCarInfoChange = (make: string, model: string, color: string, year: string) => {
     setBookingData({
       ...bookingData,
       carMake: make,
       carModel: model,
+      carColor: color,
+      carYear: year,
     });
   };
   
@@ -67,6 +72,14 @@ const Book: React.FC = () => {
     
     if (bookingData.carMake === '' || bookingData.carModel === '') {
       errors.push('Please enter your vehicle information');
+    }
+    
+    if (bookingData.carColor === '') {
+      errors.push('Please select your vehicle color');
+    }
+    
+    if (bookingData.carYear === '') {
+      errors.push('Please select your vehicle year');
     }
     
     setValidationErrors(errors);
