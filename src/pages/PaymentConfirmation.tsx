@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -281,7 +280,7 @@ const PaymentConfirmation: React.FC = () => {
               </div>
               
               <div>
-                <label htmlFor="billingZip" className="block text-sm text-gray-600 mb-1">Zip Code</label>
+                <label htmlFor="billingZip" className="block text-sm text-gray-600 mb-1">City, State, Zip Code</label>
                 <input 
                   type="text" 
                   id="billingZip" 
@@ -289,8 +288,8 @@ const PaymentConfirmation: React.FC = () => {
                   value={paymentData.billingZip} 
                   onChange={handleInputChange}
                   className="w-full rounded-md border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-ninja-red focus:border-transparent" 
-                  placeholder="12345"
-                  maxLength={5}
+                  placeholder="Houston, TX 77001"
+                  maxLength={20}
                 />
               </div>
             </div>
