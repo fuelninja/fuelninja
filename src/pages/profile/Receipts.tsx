@@ -5,6 +5,8 @@ import BottomNav from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, FileText, Download, Calendar, Fuel, MapPin, CreditCard } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { generateReceiptPDF, ReceiptData } from '@/utils/pdfGenerator';
+import { toast } from '@/hooks/use-toast';
 
 const Receipts: React.FC = () => {
   const navigate = useNavigate();
@@ -71,6 +73,18 @@ const Receipts: React.FC = () => {
   
   const selectedReceiptData = receipts.find(receipt => receipt.id === selectedReceipt);
   
+  const handleDownloadReceipt = () => {
+    if (selectedReceiptData) {
+      const pdf = generateReceiptPDF(selectedReceiptData as ReceiptData);
+      pdf.save(`FuelNinja_Receipt_${selectedReceiptData.id}.pdf`);
+      toast({
+        title: "Receipt Downloaded",
+        description: `Your receipt ${selectedReceiptData.id} has been downloaded.`,
+        variant: "default",
+      });
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Header />
@@ -103,10 +117,10 @@ const Receipts: React.FC = () => {
                   variant="outline" 
                   size="sm" 
                   className="flex items-center gap-1"
-                  onClick={() => console.log('Download receipt')}
+                  onClick={handleDownloadReceipt}
                 >
                   <Download className="h-4 w-4" />
-                  Download
+                  Download PDF
                 </Button>
               </div>
               
