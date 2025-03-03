@@ -1,7 +1,5 @@
-
 import React, { useEffect, useState, useRef } from 'react';
 import { MapPin, Navigation, Clock, CheckCircle } from 'lucide-react';
-import { toast } from '@/hooks/use-toast';
 
 interface DeliveryStatus {
   status: 'pending' | 'confirmed' | 'en-route' | 'arriving' | 'delivered';
@@ -56,12 +54,6 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
       ];
       
       let index = 0;
-      
-      // Show toast notification that order is confirmed
-      toast({
-        title: "Order Confirmed",
-        description: "Your driver has been assigned and is preparing for delivery.",
-      });
       
       const interval = setInterval(() => {
         // Check if we've already reached the delivered state
