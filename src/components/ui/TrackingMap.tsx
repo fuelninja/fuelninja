@@ -93,33 +93,33 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
         </div>
       </div>
       
-      {/* Delivery Status Progress Bar - Updated to show checkmarks for completed steps */}
+      {/* Delivery Status Progress Bar - Fixed to prevent glitching */}
       <div className="relative">
         <div className="flex justify-between mb-2">
           {statusSteps.map((step, index) => {
-            const currentStep = getCurrentStepIndex();
-            const isCompleted = index <= currentStep;
-            const isActive = index === currentStep;
+            const currentStepIndex = getCurrentStepIndex();
+            const isCompleted = index < currentStepIndex;
+            const isActive = index === currentStepIndex;
             
             return (
               <div key={step.key} className="flex flex-col items-center">
                 <div 
                   className={`w-7 h-7 rounded-full flex items-center justify-center z-10 transition-all duration-300 ${
-                    isCompleted && index < currentStep
+                    isCompleted
                       ? 'bg-navy-blue text-white' 
                       : isActive
                         ? 'bg-ninja-orange text-white ring-4 ring-ninja-orange/20'
                         : 'bg-gray-200 text-gray-400'
                   }`}
                 >
-                  {isCompleted && index < currentStep ? (
+                  {isCompleted ? (
                     <CheckCircle className="w-4 h-4" />
                   ) : (
                     <span className="text-xs font-bold">{index + 1}</span>
                   )}
                 </div>
                 <span className={`text-xs mt-1 text-center font-medium ${
-                  isCompleted ? 'text-navy-blue' : 'text-gray-400'
+                  isCompleted || isActive ? 'text-navy-blue' : 'text-gray-400'
                 }`}>
                   {step.label}
                 </span>
