@@ -49,7 +49,7 @@ const HelpSupport: React.FC = () => {
     },
     {
       question: "What if I need to cancel or reschedule my delivery?",
-      answer: "You can cancel or reschedule your delivery through the app up to 30 minutes before the scheduled delivery time without any penalty."
+      answer: "You can cancel or reschedule your delivery through the app up to 30 minutes before the scheduled delivery time without any penalty. If you do cancel less than 30 minutes prior to your appointment, you will be subject to a $12 cancellation fee."
     }
   ];
   
