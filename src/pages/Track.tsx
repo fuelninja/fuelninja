@@ -4,28 +4,21 @@ import { useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import TrackingMap from '@/components/ui/TrackingMap';
-import { Fuel, CalendarClock, MapPin, CheckCircle } from 'lucide-react';
+import { Fuel, CalendarClock, MapPin, CheckCircle, Car } from 'lucide-react';
 import Confetti from '@/components/ui/Confetti';
 import ReviewPrompt from '@/components/ui/ReviewPrompt';
 import { format } from 'date-fns';
+import DataService, { OrderData } from '@/utils/DataService';
 
 const Track: React.FC = () => {
   const location = useLocation();
   const [orderId, setOrderId] = useState<string>('');
+  const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [showConfetti, setShowConfetti] = useState(false);
   const [showReviewPrompt, setShowReviewPrompt] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState<string>('');
   const [orderExpired, setOrderExpired] = useState(false);
   const [deliveryTimestamp, setDeliveryTimestamp] = useState<number | null>(null);
-  
-  // Sample order details - in a real app, this would come from an API
-  const orderDetails = {
-    fuelType: 'Regular Unleaded',
-    amount: '10 gallons',
-    price: '$39.90',
-    scheduledTime: 'Today, 2:00 PM',
-    deliveryAddress: '123 Main St, Houston, TX 77001',
-  };
   
   useEffect(() => {
     // Extract order ID from URL query params
@@ -33,18 +26,37 @@ const Track: React.FC = () => {
     const id = params.get('orderId');
     setOrderId(id || ''); // Set to empty string if no orderId is present
     
-    // Only check for delivery timestamp if we have an order ID
+    // Only fetch order data if we have an order ID
     if (id) {
-      // Check local storage for delivery timestamp
-      const storedTimestamp = localStorage.getItem(`delivery-time-${id}`);
-      if (storedTimestamp) {
-        const timestamp = parseInt(storedTimestamp, 10);
-        setDeliveryTimestamp(timestamp);
+      const order = DataService.getOrderById(id);
+      setOrderData(order);
+      
+      if (order) {
+        // Set delivery status
+        setDeliveryStatus(order.status);
         
-        // Check if more than 30 minutes have passed
-        const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
-        if (timestamp < thirtyMinutesAgo) {
-          setOrderExpired(true);
+        // If order is already delivered, set the delivery timestamp
+        if (order.status === 'delivered' && order.deliveredAt) {
+          setDeliveryTimestamp(order.deliveredAt);
+          
+          // Check if more than 30 minutes have passed since delivery
+          const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
+          if (order.deliveredAt < thirtyMinutesAgo) {
+            setOrderExpired(true);
+          }
+        }
+      } else {
+        // Check local storage for delivery timestamp (legacy support)
+        const storedTimestamp = localStorage.getItem(`delivery-time-${id}`);
+        if (storedTimestamp) {
+          const timestamp = parseInt(storedTimestamp, 10);
+          setDeliveryTimestamp(timestamp);
+          
+          // Check if more than 30 minutes have passed
+          const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
+          if (timestamp < thirtyMinutesAgo) {
+            setOrderExpired(true);
+          }
         }
       }
     }
@@ -55,7 +67,12 @@ const Track: React.FC = () => {
     setDeliveryStatus(status);
     
     if (status === 'delivered') {
-      // Store delivery timestamp in localStorage
+      // Update order status in DataService
+      if (orderId) {
+        DataService.updateOrderStatus(orderId, 'delivered');
+      }
+      
+      // Store delivery timestamp in localStorage (legacy support)
       const currentTime = Date.now();
       localStorage.setItem(`delivery-time-${orderId}`, currentTime.toString());
       setDeliveryTimestamp(currentTime);
@@ -95,7 +112,7 @@ const Track: React.FC = () => {
             <>
               <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
               
-              {/* Order Details - Updated with navy blue */}
+              {/* Order Details - Using data from our DataService */}
               <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-200 bg-white shadow-lg">
                 <h2 className="text-lg font-semibold text-navy-blue">Order Details</h2>
                 
@@ -104,7 +121,9 @@ const Track: React.FC = () => {
                     <Fuel className="w-5 h-5 text-ninja-orange mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Fuel</div>
-                      <div className="text-navy-blue">{orderDetails.fuelType}, {orderDetails.amount}</div>
+                      <div className="text-navy-blue">
+                        {orderData ? `${orderData.fuelType}, ${orderData.amount} gallons` : 'Loading...'}
+                      </div>
                     </div>
                   </div>
                   
@@ -112,7 +131,9 @@ const Track: React.FC = () => {
                     <CalendarClock className="w-5 h-5 text-ninja-orange mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Scheduled Time</div>
-                      <div className="text-navy-blue">{orderDetails.scheduledTime}</div>
+                      <div className="text-navy-blue">
+                        {orderData ? orderData.scheduledTime : 'Loading...'}
+                      </div>
                     </div>
                   </div>
                   
@@ -120,9 +141,23 @@ const Track: React.FC = () => {
                     <MapPin className="w-5 h-5 text-ninja-orange mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Delivery Address</div>
-                      <div className="text-navy-blue">{orderDetails.deliveryAddress}</div>
+                      <div className="text-navy-blue">
+                        {orderData ? orderData.deliveryAddress : 'Loading...'}
+                      </div>
                     </div>
                   </div>
+                  
+                  {orderData && orderData.carInfo && (
+                    <div className="flex items-start">
+                      <Car className="w-5 h-5 text-ninja-orange mr-3" />
+                      <div>
+                        <div className="text-sm text-gray-500">Vehicle</div>
+                        <div className="text-navy-blue">
+                          {`${orderData.carInfo.year} ${orderData.carInfo.make} ${orderData.carInfo.model}, ${orderData.carInfo.color}`}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
               

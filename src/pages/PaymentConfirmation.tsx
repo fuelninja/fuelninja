@@ -5,6 +5,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, CreditCard, Check, AlertCircle } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
+import DataService from '@/utils/DataService';
 
 const PaymentConfirmation: React.FC = () => {
   const navigate = useNavigate();
@@ -108,6 +109,38 @@ const PaymentConfirmation: React.FC = () => {
     
     if (errors.length === 0) {
       const orderId = Math.floor(100000 + Math.random() * 900000).toString();
+      
+      const orderData = {
+        orderId,
+        fuelType: bookingData.fuelType,
+        amount: bookingData.fuelAmount,
+        price: priceDetails.total,
+        scheduledTime: formatDate(bookingData.deliveryTime),
+        deliveryAddress: bookingData.location,
+        carInfo: {
+          make: bookingData.carMake,
+          model: bookingData.carModel,
+          color: bookingData.carColor,
+          year: bookingData.carYear
+        },
+        status: 'pending',
+        createdAt: Date.now()
+      };
+      
+      DataService.saveOrder(orderData);
+      
+      if (paymentData.billingAddress) {
+        DataService.addSavedAddress(paymentData.billingAddress);
+      }
+      
+      if (paymentData.cardNumber && paymentData.cardName) {
+        const last4 = paymentData.cardNumber.slice(-4);
+        DataService.addPaymentMethod({
+          cardName: paymentData.cardName,
+          cardNumberLast4: last4,
+          expDate: paymentData.expDate
+        });
+      }
       
       toast({
         title: "Payment Successful!",
