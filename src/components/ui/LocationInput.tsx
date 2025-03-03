@@ -23,11 +23,11 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
     if (!input || input.length < 3) return [];
     
     const mockAddresses = [
-      { id: '1', text: input + ' Main St, New York, NY' },
-      { id: '2', text: input + ' Broadway Ave, New York, NY' },
-      { id: '3', text: input + ' 5th Avenue, New York, NY' },
-      { id: '4', text: input + ' Park Avenue, New York, NY' },
-      { id: '5', text: input + ' Madison Ave, New York, NY' },
+      { id: '1', text: input + ' Street' },
+      { id: '2', text: input + ' Avenue' },
+      { id: '3', text: input + ' Boulevard' },
+      { id: '4', text: input + ' Lane' },
+      { id: '5', text: input + ' Drive' },
     ];
     
     return mockAddresses;
