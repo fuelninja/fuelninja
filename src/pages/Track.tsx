@@ -1,10 +1,9 @@
-
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import TrackingMap from '@/components/ui/TrackingMap';
-import { Fuel, CalendarClock, MapPin, Phone, MessageSquare } from 'lucide-react';
+import { Fuel, CalendarClock, MapPin } from 'lucide-react';
 
 const Track: React.FC = () => {
   const location = useLocation();
@@ -71,17 +70,9 @@ const Track: React.FC = () => {
                 </div>
               </div>
               
-              {/* Driver Contact */}
-              <div className="flex justify-between gap-4 animate-fade-in animation-delay-300">
-                <button className="flex-1 bg-gray-100 text-gray-800 rounded-xl py-3 flex items-center justify-center">
-                  <Phone className="w-5 h-5 mr-2" />
-                  Call Driver
-                </button>
-                
-                <button className="flex-1 bg-gray-100 text-gray-800 rounded-xl py-3 flex items-center justify-center">
-                  <MessageSquare className="w-5 h-5 mr-2" />
-                  Message
-                </button>
+              {/* Vehicle Location Note */}
+              <div className="text-center text-gray-600 animate-fade-in animation-delay-300">
+                If we have any trouble finding your vehicle, we will give you a call!
               </div>
             </>
           ) : (

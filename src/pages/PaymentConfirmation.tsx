@@ -12,7 +12,6 @@ const PaymentConfirmation: React.FC = () => {
   const { toast } = useToast();
   const queryParams = new URLSearchParams(location.search);
   
-  // Get booking data from URL or use defaults
   const bookingData = {
     fuelAmount: Number(queryParams.get('amount') || 2),
     fuelType: queryParams.get('type') || 'Regular Unleaded',
@@ -24,7 +23,6 @@ const PaymentConfirmation: React.FC = () => {
     carYear: queryParams.get('year') || '',
   };
   
-  // Payment form state
   const [paymentData, setPaymentData] = useState({
     cardName: '',
     cardNumber: '',
@@ -109,7 +107,6 @@ const PaymentConfirmation: React.FC = () => {
     setValidationErrors(errors);
     
     if (errors.length === 0) {
-      // Process payment and create order (would connect to API in real implementation)
       const orderId = Math.floor(100000 + Math.random() * 900000).toString();
       
       toast({
@@ -118,7 +115,6 @@ const PaymentConfirmation: React.FC = () => {
         className: "bg-green-50 border-green-200 text-green-800",
       });
       
-      // Navigate to tracking page with order ID
       navigate(`/track?orderId=${orderId}`);
     }
   };
@@ -141,7 +137,6 @@ const PaymentConfirmation: React.FC = () => {
         </div>
         
         <div className="space-y-6">
-          {/* Order Summary */}
           <div className="glass-card p-5 animate-fade-in">
             <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
             
@@ -198,7 +193,6 @@ const PaymentConfirmation: React.FC = () => {
             </div>
           </div>
           
-          {/* Payment Information */}
           <div className="glass-card p-5 animate-fade-in animation-delay-100">
             <h2 className="text-lg font-semibold mb-4">Payment Information</h2>
             
@@ -261,7 +255,6 @@ const PaymentConfirmation: React.FC = () => {
             </div>
           </div>
           
-          {/* Billing Information */}
           <div className="glass-card p-5 animate-fade-in animation-delay-200">
             <h2 className="text-lg font-semibold mb-4">Billing Information</h2>
             
@@ -275,7 +268,7 @@ const PaymentConfirmation: React.FC = () => {
                   value={paymentData.billingAddress} 
                   onChange={handleInputChange}
                   className="w-full rounded-md border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-ninja-red focus:border-transparent" 
-                  placeholder="123 Main St, City, State"
+                  placeholder="123 Main St"
                 />
               </div>
               

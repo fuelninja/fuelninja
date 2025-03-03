@@ -1,6 +1,7 @@
+
 import React, { useState } from 'react';
 import { Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, isToday, addDays, isBefore, startOfDay } from 'date-fns';
+import { format, isToday, addDays, isBefore, startOfDay, addHours } from 'date-fns';
 import { Calendar } from "@/components/ui/calendar";
 import {
   Popover,
@@ -19,13 +20,28 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
   const [calendarOpen, setCalendarOpen] = useState(false);
   
   const generateTimeSlots = () => {
-    const currentHour = new Date().getHours();
+    const currentTime = new Date();
+    const twoHoursFromNow = addHours(currentTime, 2);
     const slots = [];
     
-    const startHour = isToday(selectedDate) ? Math.max(currentHour + 1, 9) : 9;
-    const endHour = 20;
+    // Adjust the start hour based on the 2-hour advance requirement
+    const startHour = isToday(selectedDate) 
+      ? Math.max(twoHoursFromNow.getHours(), 8) 
+      : 8;
+    const endHour = 22; // Changed to 10 PM (22:00)
     
     for (let hour = startHour; hour <= endHour; hour++) {
+      // Skip times that are less than 2 hours from now on the current day
+      if (isToday(selectedDate) && hour < twoHoursFromNow.getHours()) {
+        continue;
+      }
+      
+      // For the exact 2-hour from now time, check minutes
+      if (isToday(selectedDate) && hour === twoHoursFromNow.getHours() && twoHoursFromNow.getMinutes() > 0) {
+        // If more than 0 minutes have passed in the current hour, move to the next hour
+        continue;
+      }
+      
       const timeString = `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
       slots.push(timeString);
     }
@@ -182,6 +198,10 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
             No delivery times available for today. Please select another day.
           </div>
         )}
+        
+        <div className="text-xs text-gray-500 mt-2">
+          Note: Delivery times must be booked at least 2 hours in advance.
+        </div>
       </div>
     </div>
   );
