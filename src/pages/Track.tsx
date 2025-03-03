@@ -14,6 +14,8 @@ const Track: React.FC = () => {
   const [showConfetti, setShowConfetti] = useState(false);
   const [showReviewPrompt, setShowReviewPrompt] = useState(false);
   const [deliveryStatus, setDeliveryStatus] = useState<string>('');
+  const [orderExpired, setOrderExpired] = useState(false);
+  const [deliveryTimestamp, setDeliveryTimestamp] = useState<number | null>(null);
   
   // Sample order details - in a real app, this would come from an API
   const orderDetails = {
@@ -29,6 +31,19 @@ const Track: React.FC = () => {
     const params = new URLSearchParams(location.search);
     const id = params.get('orderId') || 'demo-order-123'; // Provide a default ID if none in URL
     setOrderId(id);
+    
+    // Check local storage for delivery timestamp
+    const storedTimestamp = localStorage.getItem(`delivery-time-${id}`);
+    if (storedTimestamp) {
+      const timestamp = parseInt(storedTimestamp, 10);
+      setDeliveryTimestamp(timestamp);
+      
+      // Check if more than 24 hours have passed
+      const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
+      if (timestamp < twentyFourHoursAgo) {
+        setOrderExpired(true);
+      }
+    }
   }, [location]);
   
   // Listener for delivery status changes coming from TrackingMap
@@ -36,6 +51,11 @@ const Track: React.FC = () => {
     setDeliveryStatus(status);
     
     if (status === 'delivered') {
+      // Store delivery timestamp in localStorage
+      const currentTime = Date.now();
+      localStorage.setItem(`delivery-time-${orderId}`, currentTime.toString());
+      setDeliveryTimestamp(currentTime);
+      
       const confettiShownKey = `confetti-shown-${orderId}`;
       const hasConfettiShown = localStorage.getItem(confettiShownKey);
       
@@ -63,7 +83,7 @@ const Track: React.FC = () => {
         <h1 className="text-2xl font-bold my-6 animate-fade-in text-navy-blue">Track Delivery</h1>
         
         <div className="space-y-6">
-          {orderId ? (
+          {orderId && !orderExpired ? (
             <>
               <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
               
@@ -104,8 +124,27 @@ const Track: React.FC = () => {
               </div>
             </>
           ) : (
-            <div className="text-center py-10 text-navy-blue">
-              <p>No active orders to track.</p>
+            <div className="text-center py-10 glass-card p-6 animate-fade-in">
+              <CalendarClock className="w-16 h-16 text-navy-blue/30 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-navy-blue mb-2">
+                {orderExpired ? 'Order Completed' : 'No Active Orders'}
+              </h3>
+              <p className="text-gray-600 mb-6">
+                {orderExpired 
+                  ? 'This order has been completed and is no longer available for tracking.' 
+                  : 'You don\'t have any active orders to track at the moment.'}
+              </p>
+              {orderExpired && deliveryTimestamp && (
+                <p className="text-sm text-gray-500 mb-4">
+                  Delivery completed on {new Date(deliveryTimestamp).toLocaleDateString()} at {new Date(deliveryTimestamp).toLocaleTimeString()}
+                </p>
+              )}
+              <a 
+                href="/book" 
+                className="inline-block px-4 py-2 bg-ninja-orange text-white rounded-lg hover:bg-ninja-orange/90 transition-colors"
+              >
+                Book A New Delivery
+              </a>
             </div>
           )}
         </div>
