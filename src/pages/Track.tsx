@@ -139,7 +139,7 @@ const Track: React.FC = () => {
               <p className="text-gray-600 mb-6">
                 {orderExpired 
                   ? 'This order has been completed and is no longer available for tracking.' 
-                  : 'You don\'t have any active orders to track at the moment.'}
+                  : 'Current fuel orders will display here.'}
               </p>
               {orderExpired && deliveryTimestamp && (
                 <div className="mb-6">
