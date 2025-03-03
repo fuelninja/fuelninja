@@ -38,9 +38,9 @@ const Track: React.FC = () => {
       const timestamp = parseInt(storedTimestamp, 10);
       setDeliveryTimestamp(timestamp);
       
-      // Check if more than 24 hours have passed
-      const twentyFourHoursAgo = Date.now() - 24 * 60 * 60 * 1000;
-      if (timestamp < twentyFourHoursAgo) {
+      // Check if more than 30 minutes have passed (changed from 24 hours)
+      const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
+      if (timestamp < thirtyMinutesAgo) {
         setOrderExpired(true);
       }
     }
