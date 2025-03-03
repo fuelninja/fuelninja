@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
-import { Fuel, ChevronDown, GaugeCircle } from 'lucide-react';
+import { Fuel, ChevronDown } from 'lucide-react';
+import { Slider } from "@/components/ui/slider";
 
 interface FuelAmountSelectorProps {
   onChange: (amount: number, isFull: boolean, fuelType: string) => void;
@@ -11,7 +12,6 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
   const [isFull, setIsFull] = useState<boolean>(false);
   const [fuelType, setFuelType] = useState<string>("Regular Unleaded");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
-  const [isAdjusting, setIsAdjusting] = useState<boolean>(false);
   
   const minAmount = 2;
   const maxAmount = 20;
@@ -22,11 +22,11 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
     "Diesel"
   ];
   
-  const handleAmountChange = (newAmount: number) => {
-    if (newAmount >= minAmount && newAmount <= maxAmount) {
-      setAmount(newAmount);
+  const handleAmountChange = (newAmount: number[]) => {
+    if (newAmount[0] >= minAmount && newAmount[0] <= maxAmount) {
+      setAmount(newAmount[0]);
       setIsFull(false);
-      onChange(newAmount, false, fuelType);
+      onChange(newAmount[0], false, fuelType);
     }
   };
   
@@ -39,45 +39,6 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
     setFuelType(type);
     setIsDropdownOpen(false);
     onChange(isFull ? 0 : amount, isFull, type);
-  };
-  
-  const calculateGaugeRotation = () => {
-    // Map from 2-20 gallons to 0-180 degrees
-    if (isFull) return 180;
-    const percentage = ((amount - minAmount) / (maxAmount - minAmount)) * 180;
-    return percentage;
-  };
-  
-  const handleGaugeClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (isFull) return;
-    
-    const rect = e.currentTarget.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = rect.bottom - e.clientY - rect.height / 2;
-    
-    // Calculate angle in degrees from center of gauge
-    let angle = Math.atan2(y, x) * (180 / Math.PI);
-    
-    // Adjust angle to be between 0 and 180
-    if (angle < 0) angle = 0;
-    if (angle > 180) angle = 180;
-    
-    // Map from 0-180 degrees to 2-20 gallons
-    const newAmount = Math.round((angle / 180) * (maxAmount - minAmount) + minAmount);
-    handleAmountChange(newAmount);
-  };
-  
-  const handleGaugeMouseDown = () => {
-    setIsAdjusting(true);
-  };
-  
-  const handleGaugeMouseUp = () => {
-    setIsAdjusting(false);
-  };
-  
-  const handleGaugeMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!isAdjusting || isFull) return;
-    handleGaugeClick(e);
   };
   
   return (
@@ -112,74 +73,29 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
         </div>
       </div>
       
-      {/* Interactive Fuel Gauge */}
-      <div 
-        className="relative w-full h-44 flex items-center justify-center cursor-pointer"
-        onClick={handleGaugeClick}
-        onMouseDown={handleGaugeMouseDown}
-        onMouseUp={handleGaugeMouseUp}
-        onMouseMove={handleGaugeMouseMove}
-        onMouseLeave={handleGaugeMouseUp}
-      >
-        {/* Gauge Background */}
-        <div className="absolute w-40 h-40 rounded-full border-8 border-gray-200 overflow-hidden">
-          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gray-100"></div>
+      {/* Interactive Fuel Slider */}
+      <div className="py-6">
+        <Slider
+          defaultValue={[amount]}
+          min={minAmount}
+          max={maxAmount}
+          step={1}
+          value={[amount]}
+          onValueChange={handleAmountChange}
+          disabled={isFull}
+          className="my-4"
+        />
+        
+        <div className="flex justify-between text-sm text-gray-500 mt-1">
+          <span>{minAmount} gal</span>
+          <span>{maxAmount} gal</span>
         </div>
-        
-        {/* Gauge Fill */}
-        <div 
-          className="absolute bottom-0 left-0 w-40 h-40 origin-bottom overflow-hidden"
-          style={{ transform: `rotate(${calculateGaugeRotation()}deg)` }}
-        >
-          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-r from-ninja-orange to-ninja-green"></div>
-        </div>
-        
-        {/* Gauge Needle */}
-        <div 
-          className="absolute bottom-0 left-1/2 w-1 h-20 bg-red-500 origin-bottom transition-transform duration-300"
-          style={{ transform: `translateX(-50%) rotate(${calculateGaugeRotation()}deg)` }}
-        >
-          <div className="w-3 h-3 rounded-full bg-red-600 absolute -top-1 -left-1"></div>
-        </div>
-        
-        {/* Gauge Center */}
-        <div className="absolute bottom-0 left-1/2 w-6 h-6 rounded-full bg-white border-2 border-gray-300 transform -translate-x-1/2"></div>
-        
-        {/* Gauge Markings */}
-        <div className="absolute bottom-0 left-0 w-40 h-40 pointer-events-none">
-          {[...Array(5)].map((_, i) => (
-            <div 
-              key={i} 
-              className="absolute bottom-0 left-1/2 h-full origin-bottom"
-              style={{ transform: `translateX(-50%) rotate(${i * 45}deg)` }}
-            >
-              <div className="w-1 h-3 bg-gray-400 absolute top-6"></div>
-              <div className="absolute top-11 transform -translate-x-1/2 text-xs font-bold">
-                {Math.round(minAmount + (i * ((maxAmount - minAmount) / 4)))}
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        {/* Gauge Value Display */}
-        <div className="absolute w-full bottom-3 text-center">
-          <div className="text-2xl font-bold drop-shadow-sm">
-            {isFull ? 'Full Tank' : `${amount} Gallons`}
-          </div>
-        </div>
-        
-        {/* Gauge Icon */}
-        <GaugeCircle className="absolute top-1 left-1/2 transform -translate-x-1/2 w-8 h-8 text-gray-400" />
       </div>
       
       <div className="flex justify-between items-center">
-        <button 
-          className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-xl font-bold hover:bg-gray-200 transition-colors"
-          onClick={() => handleAmountChange(amount - 1)}
-          disabled={amount <= minAmount || isFull}
-        >
-          -
-        </button>
+        <div className="text-2xl font-bold">
+          {isFull ? 'Full Tank' : `${amount} Gallons`}
+        </div>
         
         <button
           className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
@@ -190,14 +106,6 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
           onClick={handleFullTankToggle}
         >
           Full Tank
-        </button>
-        
-        <button 
-          className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center text-xl font-bold hover:bg-gray-200 transition-colors"
-          onClick={() => handleAmountChange(amount + 1)}
-          disabled={amount >= maxAmount || isFull}
-        >
-          +
         </button>
       </div>
       
