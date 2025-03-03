@@ -107,9 +107,9 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
           <Navigation className={`w-5 h-5 ${isCurrentLocation ? 'text-ninja-orange' : 'text-gray-400'}`} />
         </button>
         
-        {/* Address suggestions dropdown */}
+        {/* Address suggestions dropdown - Updated with proper z-index and solid background */}
         {showSuggestions && suggestions.length > 0 && (
-          <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+          <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
             {suggestions.map((suggestion) => (
               <div
                 key={suggestion.id}

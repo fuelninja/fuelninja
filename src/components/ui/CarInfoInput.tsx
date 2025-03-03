@@ -155,8 +155,9 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
           
+          {/* Updated dropdown for car makes with solid background and higher z-index */}
           {showMakes && filteredMakes.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {filteredMakes.map((makeName, index) => (
                 <div
                   key={index}
@@ -188,8 +189,9 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
           
+          {/* Updated dropdown for car models with solid background and higher z-index */}
           {showModels && filteredModels.length > 0 && (
-            <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {filteredModels.map((modelName, index) => (
                 <div
                   key={index}
