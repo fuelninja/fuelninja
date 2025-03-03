@@ -20,7 +20,7 @@ const Logo: React.FC<LogoProps> = ({
   };
   
   const variantClasses = {
-    dark: 'text-ninja-black',
+    dark: 'text-ninja-primary',
     light: 'text-ninja-white',
     colored: 'text-gradient',
   };

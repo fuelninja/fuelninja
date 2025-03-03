@@ -69,7 +69,7 @@ const Track: React.FC = () => {
             <>
               <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
               
-              {/* Order Details - Updated with darker navy blue */}
+              {/* Order Details - Updated with navy blue */}
               <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-200 bg-white shadow-lg">
                 <h2 className="text-lg font-semibold text-navy-blue">Order Details</h2>
                 

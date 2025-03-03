@@ -1,4 +1,3 @@
-
 import type { Config } from "tailwindcss";
 
 export default {
@@ -54,15 +53,14 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
                 ninja: {
-                    black: '#121212',
+                    primary: '#0A3161', // Navy blue
+                    secondary: '#F97316', // Bright orange
                     white: '#FCFCFC',
-                    red: '#ea384c',
-                    darkred: '#c01f32',
                     // Astros colors
                     orange: '#F97316',
-                    blue: '#1EAEDB'
+                    blue: '#0A3161' // Navy blue
                 },
-                // Adding darker navy blue color
+                // Keeping the navy-blue color
                 'navy-blue': '#0A3161'
 			},
 			borderRadius: {
