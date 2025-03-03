@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect } from 'react';
 import { Car, ChevronDown } from 'lucide-react';
 
@@ -17,7 +16,6 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
   const makeRef = useRef<HTMLDivElement>(null);
   const modelRef = useRef<HTMLDivElement>(null);
   
-  // Mock data for car makes and models
   const carMakes = [
     'Acura', 'Audi', 'BMW', 'Buick', 'Cadillac', 'Chevrolet', 'Chrysler', 
     'Dodge', 'Ford', 'GMC', 'Honda', 'Hyundai', 'Infiniti', 'Jaguar', 'Jeep',
@@ -31,10 +29,8 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
     'Ford': ['F-150', 'Escape', 'Explorer', 'Mustang', 'Edge', 'Bronco', 'Ranger', 'Expedition'],
     'Chevrolet': ['Silverado', 'Equinox', 'Tahoe', 'Malibu', 'Traverse', 'Camaro', 'Suburban', 'Colorado'],
     'BMW': ['3 Series', '5 Series', 'X3', 'X5', 'X7', '7 Series', 'M3', 'M5'],
-    // Add more as needed, or in a real app, these would come from an API
   };
   
-  // For any make not specifically defined, use these generic models
   const defaultModels = ['Base', 'Sport', 'Premium', 'Limited', 'Touring', 'GT', 'SE', 'LE', 'XLE', 'XSE'];
   
   useEffect(() => {
@@ -92,7 +88,7 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
   
   const selectMake = (selectedMake: string) => {
     setMake(selectedMake);
-    setModel(''); // Reset model when make changes
+    setModel('');
     setShowMakes(false);
     onChange(selectedMake, '');
   };
@@ -155,9 +151,8 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
           
-          {/* Updated dropdown for car makes with solid background and higher z-index */}
           {showMakes && filteredMakes.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-[100] w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {filteredMakes.map((makeName, index) => (
                 <div
                   key={index}
@@ -184,14 +179,13 @@ const CarInfoInput: React.FC<CarInfoInputProps> = ({ onChange }) => {
               onChange={handleModelChange}
               onFocus={handleModelFocus}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-ninja-orange focus:border-ninja-orange transition-colors pr-10"
-              disabled={!make} // Disable model selection until make is selected
+              disabled={!make}
             />
             <ChevronDown className="absolute right-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-400" />
           </div>
           
-          {/* Updated dropdown for car models with solid background and higher z-index */}
           {showModels && filteredModels.length > 0 && (
-            <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+            <div className="absolute z-[100] w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
               {filteredModels.map((modelName, index) => (
                 <div
                   key={index}

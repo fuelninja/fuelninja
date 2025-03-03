@@ -12,13 +12,13 @@ const Index: React.FC = () => {
     { 
       icon: Fuel, 
       title: 'Convenient Refueling', 
-      description: 'From 2 gallons to a full tank, delivered to your location.',
+      description: 'Fill your tank up from anywhere you are. We come to you!',
       delay: 'animation-delay-100'
     },
     { 
       icon: MapPin, 
       title: 'Houston Area Service', 
-      description: 'Serving Houston and surrounding cities with prompt delivery.',
+      description: 'We only service the Houston area and surrounding cities.',
       delay: 'animation-delay-200'
     },
     { 
@@ -40,7 +40,7 @@ const Index: React.FC = () => {
             Fuel Delivery<br /><span className="text-gradient">On Demand</span>
           </h1>
           <p className="text-gray-600 mb-8 animate-fade-in animation-delay-100">
-            Never wait at a gas station again. Get fuel delivered to your car, anywhere in Houston.
+            Fast Fuel, No Hassle. Get fuel delivered to your car, anywhere in Houston.
           </p>
           
           <button 

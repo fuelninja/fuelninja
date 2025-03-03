@@ -72,11 +72,8 @@ const Book: React.FC = () => {
     setValidationErrors(errors);
     
     if (errors.length === 0) {
-      // In a real app, this would send the booking to an API
       console.log('Booking submitted:', bookingData);
-      // Generate a fake order ID
       const orderId = Math.floor(100000 + Math.random() * 900000).toString();
-      // Navigate to tracking page
       navigate(`/track?orderId=${orderId}`);
     }
   };
@@ -88,7 +85,7 @@ const Book: React.FC = () => {
       'Diesel': 3.79
     }[bookingData.fuelType] || 3.49;
     
-    const serviceFee = 5.99;
+    const serviceFee = 6.99;
     const gallons = bookingData.fuelAmount;
     
     const subtotal = gallons * pricePerGallon;
