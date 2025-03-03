@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { MapPin, Navigation, AlertCircle } from 'lucide-react';
+import { MapPin, Navigation } from 'lucide-react';
 
 interface LocationInputProps {
   onChange: (location: string, isCurrentLocation: boolean) => void;
@@ -9,33 +9,11 @@ interface LocationInputProps {
 const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
   const [location, setLocation] = useState<string>('');
   const [isCurrentLocation, setIsCurrentLocation] = useState<boolean>(false);
-  const [isInServiceArea, setIsInServiceArea] = useState<boolean | null>(null);
-  
-  // Houston area zip codes (simplified for demo)
-  const serviceAreaZips = [
-    '77001', '77002', '77003', '77004', '77005', 
-    '77006', '77007', '77008', '77009', '77010',
-    // more Houston and surrounding area zip codes would be added here
-  ];
-  
-  const checkServiceArea = (zip: string) => {
-    return serviceAreaZips.includes(zip);
-  };
   
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newLocation = e.target.value;
     setLocation(newLocation);
     setIsCurrentLocation(false);
-    
-    // Simple validation - check if input contains a valid ZIP code
-    const zipMatch = newLocation.match(/\b\d{5}\b/);
-    if (zipMatch) {
-      const isValid = checkServiceArea(zipMatch[0]);
-      setIsInServiceArea(isValid);
-    } else {
-      setIsInServiceArea(null);
-    }
-    
     onChange(newLocation, false);
   };
   
@@ -43,8 +21,6 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
     // In a real app, this would use the Geolocation API
     setIsCurrentLocation(true);
     setLocation('Current Location');
-    setIsInServiceArea(true); // Assuming current location is valid
-    
     onChange('Current Location', true);
   };
   
@@ -59,7 +35,7 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
         <input
           type="text"
           className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-ninja-orange focus:border-ninja-orange block w-full pl-10 p-2.5"
-          placeholder="Enter your address"
+          placeholder="Enter your delivery address"
           value={location}
           onChange={handleLocationChange}
         />
@@ -72,22 +48,8 @@ const LocationInput: React.FC<LocationInputProps> = ({ onChange }) => {
         </button>
       </div>
       
-      {isInServiceArea === false && (
-        <div className="flex items-center text-red-500 text-sm">
-          <AlertCircle className="w-4 h-4 mr-1" />
-          <span>Sorry, we don't service this area yet.</span>
-        </div>
-      )}
-      
-      {isInServiceArea === true && (
-        <div className="flex items-center text-ninja-green text-sm">
-          <MapPin className="w-4 h-4 mr-1" />
-          <span>Great! We service this area.</span>
-        </div>
-      )}
-      
       <div className="text-xs text-gray-500">
-        Currently serving Houston, TX and surrounding areas only
+        Enter your complete address for accurate delivery
       </div>
     </div>
   );
