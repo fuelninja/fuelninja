@@ -35,21 +35,37 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="container max-w-md mx-auto px-4 pb-24 overflow-hidden">
-        {/* Hero Section */}
-        <section className="pt-6 pb-10 text-center">
-          <h1 className="text-4xl font-bold mb-2 animate-fade-in">
-            Fuel Delivery<br /><span className="text-gradient">On Demand</span>
-          </h1>
-          <p className="text-gray-600 mb-8 animate-fade-in animation-delay-100">
-            Fast Fuel, No Hassle. Get fuel delivered to your car, anywhere in Houston.
-          </p>
+        {/* Hero Section with Houston Skyline Background */}
+        <section className="pt-6 pb-10 text-center rounded-2xl relative overflow-hidden mb-6">
+          {/* Background Image */}
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0" 
+            style={{ 
+              backgroundImage: "url('https://images.unsplash.com/photo-1487958449943-2429e8be8625?auto=format&fit=crop&q=80')",
+              backgroundPosition: "center bottom",
+              filter: "brightness(0.85)"
+            }}
+          />
           
-          <button 
-            onClick={() => navigate('/book')}
-            className="button-primary px-6 py-3 text-lg animate-scale-in animation-delay-200 flex items-center justify-center mx-auto"
-          >
-            Book Delivery <ArrowRight className="ml-2 w-5 h-5" />
-          </button>
+          {/* Dark Overlay to improve text readability */}
+          <div className="absolute inset-0 bg-gradient-to-b from-navy-blue/50 to-navy-blue/70 z-0" />
+          
+          {/* Content */}
+          <div className="relative z-10">
+            <h1 className="text-4xl font-bold mb-2 animate-fade-in text-white">
+              Fuel Delivery<br /><span className="text-gradient">On Demand</span>
+            </h1>
+            <p className="text-white mb-8 animate-fade-in animation-delay-100">
+              Fast Fuel, No Hassle. Get fuel delivered to your car, anywhere in Houston.
+            </p>
+            
+            <button 
+              onClick={() => navigate('/book')}
+              className="button-primary px-6 py-3 text-lg animate-scale-in animation-delay-200 flex items-center justify-center mx-auto"
+            >
+              Book Delivery <ArrowRight className="ml-2 w-5 h-5" />
+            </button>
+          </div>
         </section>
         
         {/* Features Section */}
