@@ -1,9 +1,8 @@
-
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
-import { User, MapPin, CreditCard, Clock, FileText, Settings, HelpCircle, LogOut } from 'lucide-react';
+import { User, MapPin, CreditCard, Clock, FileText, HelpCircle, LogOut } from 'lucide-react';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
@@ -33,22 +32,17 @@ const Profile: React.FC = () => {
     { 
       icon: Clock, 
       label: 'Order History', 
-      onClick: () => console.log('Order History')
+      onClick: () => navigate('/profile/order-history')
     },
     { 
       icon: FileText, 
       label: 'Receipts', 
-      onClick: () => console.log('Receipts')
-    },
-    { 
-      icon: Settings, 
-      label: 'Settings', 
-      onClick: () => console.log('Settings')
+      onClick: () => navigate('/profile/receipts')
     },
     { 
       icon: HelpCircle, 
       label: 'Help & Support', 
-      onClick: () => console.log('Help & Support')
+      onClick: () => navigate('/profile/help-support')
     },
     { 
       icon: LogOut, 
