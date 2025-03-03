@@ -140,22 +140,6 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
         />
       </div>
       
-      {/* Placeholder for the map - Updated with Astros colors */}
-      <div className="bg-gray-100 h-40 rounded-lg flex items-center justify-center overflow-hidden relative">
-        <div className="text-gray-400">Map View</div>
-        
-        {/* Map pins - would be replaced with actual map */}
-        <div className="absolute left-1/4 top-1/3">
-          <MapPin className="w-6 h-6 text-ninja-blue" />
-        </div>
-        
-        {(deliveryStatus.status === 'en-route' || deliveryStatus.status === 'arriving') && (
-          <div className="absolute right-1/3 bottom-1/3 animate-pulse">
-            <Navigation className="w-6 h-6 text-ninja-orange" />
-          </div>
-        )}
-      </div>
-      
       {/* Driver information - Updated with Astros colors */}
       {deliveryStatus.driverName && (
         <div className="flex items-center bg-ninja-blue/5 p-3 rounded-lg border border-ninja-blue/10">

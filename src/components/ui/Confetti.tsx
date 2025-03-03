@@ -6,8 +6,16 @@ interface ConfettiProps {
   isActive: boolean;
 }
 
+interface ConfettiItem {
+  id: number;
+  left: number;
+  animationDuration: number;
+  delay: number;
+  color: 'blue' | 'orange';
+}
+
 const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
-  const [confettiItems, setConfettiItems] = useState<Array<{ id: number; left: number; animationDuration: number; delay: number; color: 'blue' | 'orange' }>>([]);
+  const [confettiItems, setConfettiItems] = useState<ConfettiItem[]>([]);
   
   useEffect(() => {
     if (isActive) {
@@ -17,7 +25,7 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
         left: Math.random() * 100, // random horizontal position
         animationDuration: 1 + Math.random() * 3, // random fall duration
         delay: Math.random() * 0.5, // random start delay
-        color: Math.random() > 0.5 ? 'blue' : 'orange', // alternating colors
+        color: Math.random() > 0.5 ? 'blue' : 'orange' as 'blue' | 'orange', // alternating colors
       }));
       
       setConfettiItems(newConfetti);
