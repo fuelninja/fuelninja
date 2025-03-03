@@ -86,8 +86,20 @@ const Book: React.FC = () => {
     
     if (errors.length === 0) {
       console.log('Booking submitted:', bookingData);
-      const orderId = Math.floor(100000 + Math.random() * 900000).toString();
-      navigate(`/track?orderId=${orderId}`);
+      
+      // Create query params for payment confirmation page
+      const params = new URLSearchParams();
+      params.set('amount', bookingData.fuelAmount.toString());
+      params.set('type', bookingData.fuelType);
+      params.set('location', bookingData.location);
+      params.set('time', bookingData.deliveryTime.toISOString());
+      params.set('make', bookingData.carMake);
+      params.set('model', bookingData.carModel);
+      params.set('color', bookingData.carColor);
+      params.set('year', bookingData.carYear);
+      
+      // Navigate to payment confirmation page
+      navigate(`/payment-confirmation?${params.toString()}`);
     }
   };
   

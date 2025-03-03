@@ -14,6 +14,7 @@ import PaymentMethods from "./pages/profile/PaymentMethods";
 import OrderHistory from "./pages/profile/OrderHistory";
 import Receipts from "./pages/profile/Receipts";
 import HelpSupport from "./pages/profile/HelpSupport";
+import PaymentConfirmation from "./pages/PaymentConfirmation";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -35,6 +36,7 @@ const App = () => (
           <Route path="/profile/order-history" element={<OrderHistory />} />
           <Route path="/profile/receipts" element={<Receipts />} />
           <Route path="/profile/help-support" element={<HelpSupport />} />
+          <Route path="/payment-confirmation" element={<PaymentConfirmation />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

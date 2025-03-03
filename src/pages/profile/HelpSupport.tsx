@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
-import { ChevronLeft, ChevronDown, ChevronUp, MessageCircle, Phone, Mail } from 'lucide-react';
+import { ChevronLeft, ChevronDown, ChevronUp, Phone, Mail } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 const HelpSupport: React.FC = () => {
@@ -33,7 +33,7 @@ const HelpSupport: React.FC = () => {
     },
     {
       question: "What types of fuel do you offer?",
-      answer: "We currently offer regular unleaded gasoline (87 octane). We plan to expand our offerings to include premium grades and diesel in the future."
+      answer: "We currently offer regular unleaded gasoline (87 octane), supreme gasoline (93 octane), and Diesel Fuel (#2)."
     },
     {
       question: "How do I pay for the service?",
@@ -62,6 +62,14 @@ const HelpSupport: React.FC = () => {
       setExpandedFaqs([...expandedFaqs, index]);
     }
   };
+
+  const handlePhoneCall = () => {
+    window.location.href = 'tel:346-233-7937';
+  };
+
+  const handleEmailContact = () => {
+    window.location.href = 'mailto:fuelninjahelp@gmail.com';
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -84,20 +92,22 @@ const HelpSupport: React.FC = () => {
           {/* Contact Options */}
           <div className="glass-card p-5 animate-fade-in">
             <h2 className="text-lg font-semibold mb-4">Contact Us</h2>
-            <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
-              <Button variant="outline" className="h-auto py-3 flex flex-col items-center">
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+              <Button 
+                variant="outline" 
+                className="h-auto py-3 flex flex-col items-center"
+                onClick={handlePhoneCall}
+              >
                 <Phone className="h-5 w-5 mb-2" />
                 <span>Call Support</span>
-                <span className="text-xs text-gray-500 mt-1">9am - 6pm CT</span>
+                <span className="text-xs text-gray-500 mt-1">8am - 10pm</span>
               </Button>
               
-              <Button variant="outline" className="h-auto py-3 flex flex-col items-center">
-                <MessageCircle className="h-5 w-5 mb-2" />
-                <span>Live Chat</span>
-                <span className="text-xs text-gray-500 mt-1">24/7 Support</span>
-              </Button>
-              
-              <Button variant="outline" className="h-auto py-3 flex flex-col items-center">
+              <Button 
+                variant="outline" 
+                className="h-auto py-3 flex flex-col items-center"
+                onClick={handleEmailContact}
+              >
                 <Mail className="h-5 w-5 mb-2" />
                 <span>Email Us</span>
                 <span className="text-xs text-gray-500 mt-1">24hr Response</span>

@@ -1,17 +1,21 @@
-import React from 'react';
+
+import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
-import { User, MapPin, CreditCard, Clock, FileText, HelpCircle, LogOut } from 'lucide-react';
+import { User, MapPin, CreditCard, Clock, FileText, HelpCircle, LogOut, Camera } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 const Profile: React.FC = () => {
   const navigate = useNavigate();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Sample user data - in a real app, this would come from authentication
-  const user = {
+  const [user, setUser] = useState({
     name: 'Alex Johnson',
     email: 'alex@example.com',
-  };
+    profilePicture: null as string | null,
+  });
   
   const menuItems = [
     { 
@@ -50,6 +54,21 @@ const Profile: React.FC = () => {
       onClick: () => console.log('Sign Out')
     },
   ];
+
+  const handleProfilePictureClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        setUser({ ...user, profilePicture: e.target?.result as string });
+      };
+      reader.readAsDataURL(file);
+    }
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -62,12 +81,47 @@ const Profile: React.FC = () => {
           {/* User Profile */}
           <div className="glass-card p-5 animate-fade-in">
             <div className="flex items-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-ninja-red to-ninja-black rounded-full flex items-center justify-center text-white text-2xl font-bold mr-4">
-                {user.name.charAt(0)}
+              <div className="relative mr-4">
+                <input 
+                  type="file" 
+                  ref={fileInputRef} 
+                  onChange={handleFileChange} 
+                  className="hidden" 
+                  accept="image/*" 
+                />
+                {user.profilePicture ? (
+                  <div 
+                    className="w-16 h-16 rounded-full bg-cover bg-center cursor-pointer"
+                    style={{ backgroundImage: `url(${user.profilePicture})` }}
+                    onClick={handleProfilePictureClick}
+                  >
+                    <div className="absolute bottom-0 right-0 bg-ninja-red rounded-full p-1">
+                      <Camera className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                ) : (
+                  <div 
+                    className="w-16 h-16 bg-gradient-to-br from-ninja-red to-ninja-black rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer relative"
+                    onClick={handleProfilePictureClick}
+                  >
+                    {user.name.charAt(0)}
+                    <div className="absolute bottom-0 right-0 bg-ninja-red rounded-full p-1">
+                      <Camera className="w-3 h-3 text-white" />
+                    </div>
+                  </div>
+                )}
               </div>
               <div>
                 <h2 className="text-xl font-bold">{user.name}</h2>
                 <p className="text-gray-600">{user.email}</p>
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  className="text-ninja-red p-0 h-auto mt-1"
+                  onClick={handleProfilePictureClick}
+                >
+                  Change Photo
+                </Button>
               </div>
             </div>
           </div>
