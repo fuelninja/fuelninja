@@ -30,19 +30,22 @@ const Track: React.FC = () => {
   useEffect(() => {
     // Extract order ID from URL query params
     const params = new URLSearchParams(location.search);
-    const id = params.get('orderId') || 'demo-order-123'; // Provide a default ID if none in URL
-    setOrderId(id);
+    const id = params.get('orderId');
+    setOrderId(id || ''); // Set to empty string if no orderId is present
     
-    // Check local storage for delivery timestamp
-    const storedTimestamp = localStorage.getItem(`delivery-time-${id}`);
-    if (storedTimestamp) {
-      const timestamp = parseInt(storedTimestamp, 10);
-      setDeliveryTimestamp(timestamp);
-      
-      // Check if more than 30 minutes have passed (changed from 24 hours)
-      const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
-      if (timestamp < thirtyMinutesAgo) {
-        setOrderExpired(true);
+    // Only check for delivery timestamp if we have an order ID
+    if (id) {
+      // Check local storage for delivery timestamp
+      const storedTimestamp = localStorage.getItem(`delivery-time-${id}`);
+      if (storedTimestamp) {
+        const timestamp = parseInt(storedTimestamp, 10);
+        setDeliveryTimestamp(timestamp);
+        
+        // Check if more than 30 minutes have passed
+        const thirtyMinutesAgo = Date.now() - 30 * 60 * 1000;
+        if (timestamp < thirtyMinutesAgo) {
+          setOrderExpired(true);
+        }
       }
     }
   }, [location]);
@@ -73,6 +76,10 @@ const Track: React.FC = () => {
     }
   };
   
+  // Determine if we have an active order to track
+  const hasActiveOrder = orderId && !orderExpired;
+  const hasNoOrder = !orderId;
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Header />
@@ -84,7 +91,7 @@ const Track: React.FC = () => {
         <h1 className="text-2xl font-bold my-6 animate-fade-in text-navy-blue">Track Delivery</h1>
         
         <div className="space-y-6">
-          {orderId && !orderExpired ? (
+          {hasActiveOrder ? (
             <>
               <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
               
