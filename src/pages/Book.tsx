@@ -6,6 +6,7 @@ import BottomNav from '@/components/layout/BottomNav';
 import FuelAmountSelector from '@/components/ui/FuelAmountSelector';
 import LocationInput from '@/components/ui/LocationInput';
 import DeliveryScheduler from '@/components/ui/DeliveryScheduler';
+import CarInfoInput from '@/components/ui/CarInfoInput';
 import { CreditCard, AlertCircle } from 'lucide-react';
 
 const Book: React.FC = () => {
@@ -18,6 +19,8 @@ const Book: React.FC = () => {
     location: '',
     isCurrentLocation: false,
     deliveryTime: new Date(),
+    carMake: '',
+    carModel: '',
   });
   
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
@@ -46,6 +49,14 @@ const Book: React.FC = () => {
     });
   };
   
+  const handleCarInfoChange = (make: string, model: string) => {
+    setBookingData({
+      ...bookingData,
+      carMake: make,
+      carModel: model,
+    });
+  };
+  
   const handleSubmit = () => {
     const errors = [];
     
@@ -55,6 +66,10 @@ const Book: React.FC = () => {
     
     if (!bookingData.isFullTank && (bookingData.fuelAmount < 2 || bookingData.fuelAmount > 20)) {
       errors.push('Please select a valid fuel amount');
+    }
+    
+    if (bookingData.carMake === '' || bookingData.carModel === '') {
+      errors.push('Please enter your vehicle information');
     }
     
     setValidationErrors(errors);
@@ -104,6 +119,8 @@ const Book: React.FC = () => {
           <FuelAmountSelector onChange={handleFuelAmountChange} />
           
           <LocationInput onChange={handleLocationChange} />
+          
+          <CarInfoInput onChange={handleCarInfoChange} />
           
           <DeliveryScheduler onChange={handleDeliveryTimeChange} />
           
