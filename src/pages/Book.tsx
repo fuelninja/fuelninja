@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -14,7 +13,6 @@ const Book: React.FC = () => {
   
   const [bookingData, setBookingData] = useState({
     fuelAmount: 2,
-    isFullTank: false,
     fuelType: 'Regular Unleaded',
     location: '',
     isCurrentLocation: false,
@@ -29,7 +27,6 @@ const Book: React.FC = () => {
     setBookingData({
       ...bookingData,
       fuelAmount: amount,
-      isFullTank: isFull,
       fuelType,
     });
   };
@@ -64,7 +61,7 @@ const Book: React.FC = () => {
       errors.push('Please enter a delivery location');
     }
     
-    if (!bookingData.isFullTank && (bookingData.fuelAmount < 2 || bookingData.fuelAmount > 20)) {
+    if (bookingData.fuelAmount < 2 || bookingData.fuelAmount > 20) {
       errors.push('Please select a valid fuel amount');
     }
     
@@ -84,9 +81,7 @@ const Book: React.FC = () => {
     }
   };
   
-  // Calculate price - this is a simplified example
   const calculatePrice = () => {
-    // Different prices based on fuel type
     const pricePerGallon = {
       'Regular Unleaded': 3.49,
       'Supreme': 3.99,
@@ -94,7 +89,7 @@ const Book: React.FC = () => {
     }[bookingData.fuelType] || 3.49;
     
     const serviceFee = 5.99;
-    const gallons = bookingData.isFullTank ? 12 : bookingData.fuelAmount;
+    const gallons = bookingData.fuelAmount;
     
     const subtotal = gallons * pricePerGallon;
     const total = subtotal + serviceFee;
@@ -124,14 +119,13 @@ const Book: React.FC = () => {
           
           <DeliveryScheduler onChange={handleDeliveryTimeChange} />
           
-          {/* Price Summary */}
           <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-300">
             <h2 className="text-lg font-semibold">Price Summary</h2>
             
             <div className="space-y-2">
               <div className="flex justify-between">
                 <span className="text-gray-600">
-                  {bookingData.fuelType} ({bookingData.isFullTank ? 'Full Tank' : `${bookingData.fuelAmount} gal`})
+                  {bookingData.fuelType} ({bookingData.fuelAmount} gal)
                 </span>
                 <span>${priceDetails.subtotal}</span>
               </div>
@@ -147,7 +141,6 @@ const Book: React.FC = () => {
             </div>
           </div>
           
-          {/* Validation Errors */}
           {validationErrors.length > 0 && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
               <div className="flex items-start">
@@ -164,7 +157,6 @@ const Book: React.FC = () => {
             </div>
           )}
           
-          {/* Submit Button */}
           <button 
             onClick={handleSubmit}
             className="button-primary w-full py-4 flex items-center justify-center"

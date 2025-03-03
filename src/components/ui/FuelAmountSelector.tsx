@@ -9,7 +9,6 @@ interface FuelAmountSelectorProps {
 
 const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => {
   const [amount, setAmount] = useState<number>(2);
-  const [isFull, setIsFull] = useState<boolean>(false);
   const [fuelType, setFuelType] = useState<string>("Regular Unleaded");
   const [isDropdownOpen, setIsDropdownOpen] = useState<boolean>(false);
   
@@ -25,20 +24,14 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
   const handleAmountChange = (newAmount: number[]) => {
     if (newAmount[0] >= minAmount && newAmount[0] <= maxAmount) {
       setAmount(newAmount[0]);
-      setIsFull(false);
       onChange(newAmount[0], false, fuelType);
     }
-  };
-  
-  const handleFullTankToggle = () => {
-    setIsFull(!isFull);
-    onChange(isFull ? amount : 0, !isFull, fuelType);
   };
   
   const handleFuelTypeChange = (type: string) => {
     setFuelType(type);
     setIsDropdownOpen(false);
-    onChange(isFull ? 0 : amount, isFull, type);
+    onChange(amount, false, type);
   };
   
   return (
@@ -82,7 +75,6 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
           step={1}
           value={[amount]}
           onValueChange={handleAmountChange}
-          disabled={isFull}
           className="my-4"
         />
         
@@ -94,23 +86,12 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
       
       <div className="flex justify-between items-center">
         <div className="text-2xl font-bold">
-          {isFull ? 'Full Tank' : `${amount} Gallons`}
+          {amount} Gallons
         </div>
-        
-        <button
-          className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
-            isFull 
-              ? 'bg-ninja-red text-white' 
-              : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-          }`}
-          onClick={handleFullTankToggle}
-        >
-          Full Tank
-        </button>
       </div>
       
       <div className="text-center text-sm text-gray-500">
-        {isFull ? 'We will fill your tank completely' : `Select between ${minAmount} and ${maxAmount} gallons`}
+        Select between {minAmount} and {maxAmount} gallons
       </div>
     </div>
   );
