@@ -91,7 +91,7 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
       </div>
       
       <div className="text-center text-sm text-gray-500">
-        Select between {minAmount} and {maxAmount} gallons
+        2 Gallon minimum
       </div>
     </div>
   );

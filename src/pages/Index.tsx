@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import { Fuel, MapPin, ArrowRight, Zap } from 'lucide-react';
+import Logo from '@/assets/logo';
 
 const Index: React.FC = () => {
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ const Index: React.FC = () => {
     { 
       icon: MapPin, 
       title: 'Houston Area Service', 
-      description: 'We only service the Houston area and surrounding cities.',
+      description: 'We service the Houston area and surrounding cities.',
       delay: 'animation-delay-200'
     },
     { 
@@ -61,7 +62,7 @@ const Index: React.FC = () => {
                 key={index}
                 className={`glass-card p-5 flex items-start space-x-4 section-animation ${feature.delay}`}
               >
-                <div className="bg-gradient-to-br from-ninja-orange to-ninja-green p-3 rounded-xl shadow-lg">
+                <div className="bg-gradient-to-br from-ninja-red to-ninja-black p-3 rounded-xl shadow-lg">
                   <feature.icon className="w-6 h-6 text-white" />
                 </div>
                 <div>
@@ -73,37 +74,12 @@ const Index: React.FC = () => {
           </div>
         </section>
         
-        {/* Recent Deliveries */}
-        <section className="py-10">
-          <h2 className="text-2xl font-bold mb-6 text-center section-animation">Recent Deliveries</h2>
+        {/* Logo Section (replacing Recent Deliveries) */}
+        <section className="py-10 text-center">
+          <h2 className="text-2xl font-bold mb-6 text-center section-animation">Your Fuel Delivery Partner</h2>
           
-          <div className="glass-card p-5 section-animation animation-delay-100">
-            <div className="flex justify-between items-center mb-4">
-              <div className="font-medium">Houston Area</div>
-              <div className="text-sm text-gray-500">Last 24 hours</div>
-            </div>
-            
-            <div className="h-40 relative bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg overflow-hidden">
-              {/* This would be an actual map in a real app */}
-              <div className="absolute inset-0 flex items-center justify-center text-gray-400">
-                Map Placeholder
-              </div>
-              
-              {/* Delivery pins */}
-              <div className="absolute left-1/4 top-1/3">
-                <MapPin className="w-4 h-4 text-ninja-orange" />
-              </div>
-              <div className="absolute right-1/3 top-1/2">
-                <MapPin className="w-4 h-4 text-ninja-orange" />
-              </div>
-              <div className="absolute left-1/2 bottom-1/4">
-                <MapPin className="w-4 h-4 text-ninja-orange" />
-              </div>
-            </div>
-            
-            <div className="mt-4 text-center text-sm text-gray-600">
-              27 deliveries completed today
-            </div>
+          <div className="glass-card p-8 flex justify-center items-center section-animation animation-delay-100">
+            <Logo size="lg" variant="colored" className="transform scale-150" />
           </div>
         </section>
       </main>
