@@ -1,6 +1,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { MapPin, Navigation, Clock, CheckCircle } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface DeliveryStatus {
   status: 'pending' | 'confirmed' | 'en-route' | 'arriving' | 'delivered';
@@ -16,20 +17,23 @@ interface TrackingMapProps {
 
 const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) => {
   const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus>({
-    status: 'pending'
+    status: 'confirmed', // Changed initial status from 'pending' to 'confirmed'
+    driverName: 'Michael Rodriguez',
+    eta: '25-30 minutes'
   });
   
   useEffect(() => {
+    // Notify parent of initial status
+    if (onStatusChange) {
+      onStatusChange(deliveryStatus.status);
+    }
+    
     // This would be an API call in a real app
-    // Simulating delivery progress for demo
+    // Simulating delivery progress for demo - starting at 'en-route'
     const simulateDelivery = () => {
       const statuses: DeliveryStatus[] = [
-        { status: 'pending' },
-        { 
-          status: 'confirmed', 
-          driverName: 'Michael Rodriguez',
-          eta: '25-30 minutes' 
-        },
+        // 'pending' removed as we're starting at 'confirmed' now
+        // 'confirmed' is now the initial state, so we start with 'en-route'
         { 
           status: 'en-route', 
           driverName: 'Michael Rodriguez',
@@ -49,6 +53,12 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
       ];
       
       let index = 0;
+      
+      // Show toast notification that order is confirmed
+      toast({
+        title: "Order Confirmed",
+        description: "Your driver has been assigned and is preparing for delivery.",
+      });
       
       const interval = setInterval(() => {
         if (index < statuses.length) {
