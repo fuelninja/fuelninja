@@ -14,6 +14,7 @@ const Book: React.FC = () => {
   const [bookingData, setBookingData] = useState({
     fuelAmount: 2,
     isFullTank: false,
+    fuelType: 'Regular Unleaded',
     location: '',
     isCurrentLocation: false,
     deliveryTime: new Date(),
@@ -21,11 +22,12 @@ const Book: React.FC = () => {
   
   const [validationErrors, setValidationErrors] = useState<string[]>([]);
   
-  const handleFuelAmountChange = (amount: number, isFull: boolean) => {
+  const handleFuelAmountChange = (amount: number, isFull: boolean, fuelType: string) => {
     setBookingData({
       ...bookingData,
       fuelAmount: amount,
       isFullTank: isFull,
+      fuelType,
     });
   };
   
@@ -69,7 +71,13 @@ const Book: React.FC = () => {
   
   // Calculate price - this is a simplified example
   const calculatePrice = () => {
-    const pricePerGallon = 3.49;
+    // Different prices based on fuel type
+    const pricePerGallon = {
+      'Regular Unleaded': 3.49,
+      'Supreme': 3.99,
+      'Diesel': 3.79
+    }[bookingData.fuelType] || 3.49;
+    
     const serviceFee = 5.99;
     const gallons = bookingData.isFullTank ? 12 : bookingData.fuelAmount;
     
@@ -105,7 +113,9 @@ const Book: React.FC = () => {
             
             <div className="space-y-2">
               <div className="flex justify-between">
-                <span className="text-gray-600">Fuel ({bookingData.isFullTank ? 'Full Tank' : `${bookingData.fuelAmount} gal`})</span>
+                <span className="text-gray-600">
+                  {bookingData.fuelType} ({bookingData.isFullTank ? 'Full Tank' : `${bookingData.fuelAmount} gal`})
+                </span>
                 <span>${priceDetails.subtotal}</span>
               </div>
               <div className="flex justify-between">
