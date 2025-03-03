@@ -1,13 +1,19 @@
+
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import TrackingMap from '@/components/ui/TrackingMap';
 import { Fuel, CalendarClock, MapPin } from 'lucide-react';
+import Confetti from '@/components/ui/Confetti';
+import ReviewPrompt from '@/components/ui/ReviewPrompt';
 
 const Track: React.FC = () => {
   const location = useLocation();
   const [orderId, setOrderId] = useState<string>('');
+  const [showConfetti, setShowConfetti] = useState(false);
+  const [showReviewPrompt, setShowReviewPrompt] = useState(false);
+  const [deliveryStatus, setDeliveryStatus] = useState<string>('');
   
   // Sample order details - in a real app, this would come from an API
   const orderDetails = {
@@ -27,9 +33,33 @@ const Track: React.FC = () => {
     }
   }, [location]);
   
+  // Listener for delivery status changes coming from TrackingMap
+  const handleStatusChange = (status: string) => {
+    setDeliveryStatus(status);
+    
+    if (status === 'delivered') {
+      const confettiShownKey = `confetti-shown-${orderId}`;
+      const hasConfettiShown = localStorage.getItem(confettiShownKey);
+      
+      if (!hasConfettiShown) {
+        // Show confetti and store in localStorage that we've shown it
+        setShowConfetti(true);
+        localStorage.setItem(confettiShownKey, 'true');
+        
+        // Show review prompt after a short delay
+        setTimeout(() => {
+          setShowReviewPrompt(true);
+        }, 2000);
+      }
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Header />
+      
+      {showConfetti && <Confetti isActive={true} />}
+      <ReviewPrompt isOpen={showReviewPrompt} onClose={() => setShowReviewPrompt(false)} />
       
       <main className="container max-w-md mx-auto px-4 pb-24">
         <h1 className="text-2xl font-bold my-6 animate-fade-in">Track Delivery</h1>
@@ -37,7 +67,7 @@ const Track: React.FC = () => {
         <div className="space-y-6">
           {orderId ? (
             <>
-              <TrackingMap orderId={orderId} />
+              <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
               
               {/* Order Details */}
               <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-200">

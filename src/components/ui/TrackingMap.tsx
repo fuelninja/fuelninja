@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { MapPin, Navigation, Clock, CheckCircle } from 'lucide-react';
 
@@ -11,9 +10,10 @@ interface DeliveryStatus {
 
 interface TrackingMapProps {
   orderId: string;
+  onStatusChange?: (status: string) => void;
 }
 
-const TrackingMap: React.FC<TrackingMapProps> = ({ orderId }) => {
+const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) => {
   const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus>({
     status: 'pending'
   });
@@ -51,7 +51,14 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId }) => {
       
       const interval = setInterval(() => {
         if (index < statuses.length) {
-          setDeliveryStatus(statuses[index]);
+          const newStatus = statuses[index];
+          setDeliveryStatus(newStatus);
+          
+          // Notify parent component about status change
+          if (onStatusChange) {
+            onStatusChange(newStatus.status);
+          }
+          
           index++;
         } else {
           clearInterval(interval);
@@ -62,7 +69,7 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId }) => {
     };
     
     simulateDelivery();
-  }, [orderId]);
+  }, [orderId, onStatusChange]);
   
   const statusSteps = [
     { key: 'pending', label: 'Order Placed' },
