@@ -62,23 +62,23 @@ const Track: React.FC = () => {
       <ReviewPrompt isOpen={showReviewPrompt} onClose={() => setShowReviewPrompt(false)} />
       
       <main className="container max-w-md mx-auto px-4 pb-24">
-        <h1 className="text-2xl font-bold my-6 animate-fade-in">Track Delivery</h1>
+        <h1 className="text-2xl font-bold my-6 animate-fade-in text-ninja-blue">Track Delivery</h1>
         
         <div className="space-y-6">
           {orderId ? (
             <>
               <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
               
-              {/* Order Details */}
-              <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-200">
-                <h2 className="text-lg font-semibold">Order Details</h2>
+              {/* Order Details - Updated with Astros colors */}
+              <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-200 bg-white shadow-lg">
+                <h2 className="text-lg font-semibold text-ninja-blue">Order Details</h2>
                 
                 <div className="space-y-3">
                   <div className="flex items-start">
                     <Fuel className="w-5 h-5 text-ninja-orange mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Fuel</div>
-                      <div>{orderDetails.fuelType}, {orderDetails.amount}</div>
+                      <div className="text-ninja-blue">{orderDetails.fuelType}, {orderDetails.amount}</div>
                     </div>
                   </div>
                   
@@ -86,7 +86,7 @@ const Track: React.FC = () => {
                     <CalendarClock className="w-5 h-5 text-ninja-orange mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Scheduled Time</div>
-                      <div>{orderDetails.scheduledTime}</div>
+                      <div className="text-ninja-blue">{orderDetails.scheduledTime}</div>
                     </div>
                   </div>
                   
@@ -94,19 +94,19 @@ const Track: React.FC = () => {
                     <MapPin className="w-5 h-5 text-ninja-orange mr-3" />
                     <div>
                       <div className="text-sm text-gray-500">Delivery Address</div>
-                      <div>{orderDetails.deliveryAddress}</div>
+                      <div className="text-ninja-blue">{orderDetails.deliveryAddress}</div>
                     </div>
                   </div>
                 </div>
               </div>
               
               {/* Vehicle Location Note */}
-              <div className="text-center text-gray-600 animate-fade-in animation-delay-300">
+              <div className="text-center text-ninja-blue animate-fade-in animation-delay-300">
                 If we have any trouble finding your vehicle, we will give you a call!
               </div>
             </>
           ) : (
-            <div className="text-center py-10">
+            <div className="text-center py-10 text-ninja-blue">
               <p>No active orders to track.</p>
             </div>
           )}

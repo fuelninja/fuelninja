@@ -7,16 +7,17 @@ interface ConfettiProps {
 }
 
 const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
-  const [confettiItems, setConfettiItems] = useState<Array<{ id: number; left: number; animationDuration: number; delay: number }>>([]);
+  const [confettiItems, setConfettiItems] = useState<Array<{ id: number; left: number; animationDuration: number; delay: number; color: 'blue' | 'orange' }>>([]);
   
   useEffect(() => {
     if (isActive) {
-      // Create confetti pieces
+      // Create confetti pieces with alternating Astros colors
       const newConfetti = Array.from({ length: 50 }, (_, i) => ({
         id: i,
         left: Math.random() * 100, // random horizontal position
         animationDuration: 1 + Math.random() * 3, // random fall duration
         delay: Math.random() * 0.5, // random start delay
+        color: Math.random() > 0.5 ? 'blue' : 'orange', // alternating colors
       }));
       
       setConfettiItems(newConfetti);
@@ -37,7 +38,7 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
       {confettiItems.map((item) => (
         <div
           key={item.id}
-          className="absolute top-0 text-ninja-orange animate-fall"
+          className={`absolute top-0 animate-fall ${item.color === 'blue' ? 'text-ninja-blue' : 'text-ninja-orange'}`}
           style={{
             left: `${item.left}%`,
             animationDuration: `${item.animationDuration}s`,

@@ -57,7 +57,10 @@ export default {
                     black: '#121212',
                     white: '#FCFCFC',
                     red: '#ea384c',
-                    darkred: '#c01f32'
+                    darkred: '#c01f32',
+                    // Adding Astros colors
+                    orange: '#F97316',
+                    blue: '#1EAEDB'
                 }
 			},
 			borderRadius: {
