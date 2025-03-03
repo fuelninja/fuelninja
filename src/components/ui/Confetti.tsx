@@ -19,7 +19,7 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
   
   useEffect(() => {
     if (isActive) {
-      // Create confetti pieces with alternating Astros colors
+      // Create confetti pieces with alternating navy blue and orange colors
       const newConfetti = Array.from({ length: 50 }, (_, i) => ({
         id: i,
         left: Math.random() * 100, // random horizontal position
@@ -46,7 +46,7 @@ const Confetti: React.FC<ConfettiProps> = ({ isActive }) => {
       {confettiItems.map((item) => (
         <div
           key={item.id}
-          className={`absolute top-0 animate-fall ${item.color === 'blue' ? 'text-ninja-blue' : 'text-ninja-orange'}`}
+          className={`absolute top-0 animate-fall ${item.color === 'blue' ? 'text-navy-blue' : 'text-ninja-orange'}`}
           style={{
             left: `${item.left}%`,
             animationDuration: `${item.animationDuration}s`,

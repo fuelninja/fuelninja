@@ -58,10 +58,12 @@ export default {
                     white: '#FCFCFC',
                     red: '#ea384c',
                     darkred: '#c01f32',
-                    // Adding Astros colors
+                    // Astros colors
                     orange: '#F97316',
                     blue: '#1EAEDB'
-                }
+                },
+                // Adding darker navy blue color
+                'navy-blue': '#0A3161'
 			},
 			borderRadius: {
 				lg: 'var(--radius)',
