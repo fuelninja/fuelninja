@@ -8,6 +8,9 @@ import Index from "./pages/Index";
 import Book from "./pages/Book";
 import Track from "./pages/Track";
 import Profile from "./pages/Profile";
+import PersonalInformation from "./pages/profile/PersonalInformation";
+import SavedAddresses from "./pages/profile/SavedAddresses";
+import PaymentMethods from "./pages/profile/PaymentMethods";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +26,9 @@ const App = () => (
           <Route path="/book" element={<Book />} />
           <Route path="/track" element={<Track />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path="/profile/personal-information" element={<PersonalInformation />} />
+          <Route path="/profile/saved-addresses" element={<SavedAddresses />} />
+          <Route path="/profile/payment-methods" element={<PaymentMethods />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>

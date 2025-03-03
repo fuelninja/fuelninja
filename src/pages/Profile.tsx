@@ -1,10 +1,13 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import { User, MapPin, CreditCard, Clock, FileText, Settings, HelpCircle, LogOut } from 'lucide-react';
 
 const Profile: React.FC = () => {
+  const navigate = useNavigate();
+  
   // Sample user data - in a real app, this would come from authentication
   const user = {
     name: 'Alex Johnson',
@@ -12,14 +15,46 @@ const Profile: React.FC = () => {
   };
   
   const menuItems = [
-    { icon: User, label: 'Personal Information', onClick: () => console.log('Personal Information') },
-    { icon: MapPin, label: 'Saved Addresses', onClick: () => console.log('Saved Addresses') },
-    { icon: CreditCard, label: 'Payment Methods', onClick: () => console.log('Payment Methods') },
-    { icon: Clock, label: 'Order History', onClick: () => console.log('Order History') },
-    { icon: FileText, label: 'Receipts', onClick: () => console.log('Receipts') },
-    { icon: Settings, label: 'Settings', onClick: () => console.log('Settings') },
-    { icon: HelpCircle, label: 'Help & Support', onClick: () => console.log('Help & Support') },
-    { icon: LogOut, label: 'Sign Out', onClick: () => console.log('Sign Out') },
+    { 
+      icon: User, 
+      label: 'Personal Information', 
+      onClick: () => navigate('/profile/personal-information')
+    },
+    { 
+      icon: MapPin, 
+      label: 'Saved Addresses', 
+      onClick: () => navigate('/profile/saved-addresses')
+    },
+    { 
+      icon: CreditCard, 
+      label: 'Payment Methods', 
+      onClick: () => navigate('/profile/payment-methods')
+    },
+    { 
+      icon: Clock, 
+      label: 'Order History', 
+      onClick: () => console.log('Order History')
+    },
+    { 
+      icon: FileText, 
+      label: 'Receipts', 
+      onClick: () => console.log('Receipts')
+    },
+    { 
+      icon: Settings, 
+      label: 'Settings', 
+      onClick: () => console.log('Settings')
+    },
+    { 
+      icon: HelpCircle, 
+      label: 'Help & Support', 
+      onClick: () => console.log('Help & Support')
+    },
+    { 
+      icon: LogOut, 
+      label: 'Sign Out', 
+      onClick: () => console.log('Sign Out')
+    },
   ];
   
   return (
@@ -33,7 +68,7 @@ const Profile: React.FC = () => {
           {/* User Profile */}
           <div className="glass-card p-5 animate-fade-in">
             <div className="flex items-center">
-              <div className="w-16 h-16 bg-gradient-to-br from-ninja-orange to-ninja-green rounded-full flex items-center justify-center text-white text-2xl font-bold mr-4">
+              <div className="w-16 h-16 bg-gradient-to-br from-ninja-red to-ninja-black rounded-full flex items-center justify-center text-white text-2xl font-bold mr-4">
                 {user.name.charAt(0)}
               </div>
               <div>
@@ -52,7 +87,7 @@ const Profile: React.FC = () => {
                 className="w-full flex items-center justify-between py-4 px-5 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
-                  <item.icon className="w-5 h-5 text-ninja-orange mr-3" />
+                  <item.icon className="w-5 h-5 text-ninja-red mr-3" />
                   <span>{item.label}</span>
                 </div>
                 <div className="text-gray-400">›</div>

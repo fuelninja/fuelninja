@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Clock, Calendar as CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
 import { format, isToday, addDays, isBefore, startOfDay } from 'date-fns';
@@ -19,14 +18,12 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
   const [selectedTime, setSelectedTime] = useState<string>('');
   const [calendarOpen, setCalendarOpen] = useState(false);
   
-  // Generate available delivery times for the selected day
   const generateTimeSlots = () => {
     const currentHour = new Date().getHours();
     const slots = [];
     
-    // Start from next available hour or 9AM for future dates
     const startHour = isToday(selectedDate) ? Math.max(currentHour + 1, 9) : 9;
-    const endHour = 20; // Until 8PM
+    const endHour = 20;
     
     for (let hour = startHour; hour <= endHour; hour++) {
       const timeString = `${hour % 12 || 12}:00 ${hour >= 12 ? 'PM' : 'AM'}`;
@@ -39,26 +36,23 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
   const handleCalendarSelect = (date: Date | undefined) => {
     if (!date) return;
     
-    // Ensure we don't select dates in the past
     const today = startOfDay(new Date());
     if (isBefore(date, today)) {
       date = today;
     }
     
     setSelectedDate(date);
-    setSelectedTime(''); // Reset time when date changes
-    setCalendarOpen(false); // Close calendar after selection
+    setSelectedTime('');
+    setCalendarOpen(false);
   };
   
   const handleTimeSelect = (time: string) => {
     setSelectedTime(time);
     
-    // Combine date and time for onChange
     const [hourMinute, meridiem] = time.split(' ');
     const [hourStr] = hourMinute.split(':');
     let hour = parseInt(hourStr);
     
-    // Convert to 24-hour format
     if (meridiem === 'PM' && hour !== 12) hour += 12;
     if (meridiem === 'AM' && hour === 12) hour = 0;
     
@@ -70,7 +64,6 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
   
   const timeSlots = generateTimeSlots();
   
-  // Function to format date display
   const formatDateDisplay = (date: Date) => {
     if (isToday(date)) {
       return 'Today';
@@ -81,7 +74,6 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
     }
   };
 
-  // Get days for the quick date selection
   const getQuickDateOptions = () => {
     const today = new Date();
     return [
@@ -96,10 +88,9 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
   
   const handleQuickDateSelect = (date: Date) => {
     setSelectedDate(date);
-    setSelectedTime(''); // Reset time when date changes
+    setSelectedTime('');
   };
   
-  // Date constraints for the calendar
   const today = new Date();
   const fourWeeksFromNow = addDays(today, 28);
   
@@ -114,7 +105,6 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
       </div>
       
       <div className="space-y-4">
-        {/* Calendar Popover */}
         <div className="flex items-center justify-between mb-2">
           <span className="text-sm font-medium">Selected Date:</span>
           <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
@@ -141,7 +131,6 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
           </Popover>
         </div>
         
-        {/* Quick date selection */}
         <div className="flex overflow-x-auto gap-2 pb-2 scrollbar-hide">
           {dateOptions.map((option) => (
             <button
@@ -149,12 +138,12 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
               onClick={() => handleQuickDateSelect(option.date)}
               className={`px-4 py-2 rounded-lg whitespace-nowrap text-sm transition-all duration-300 ${
                 selectedDate && isToday(selectedDate) && option.days === 0
-                  ? 'bg-ninja-orange text-white'
+                  ? 'bg-transparent text-ninja-red border border-ninja-red'
                   : selectedDate && 
                     selectedDate.getDate() === option.date.getDate() &&
                     selectedDate.getMonth() === option.date.getMonth() &&
                     selectedDate.getFullYear() === option.date.getFullYear()
-                    ? 'bg-ninja-orange text-white'
+                    ? 'bg-transparent text-ninja-red border border-ninja-red'
                     : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
@@ -179,7 +168,7 @@ const DeliveryScheduler: React.FC<DeliverySchedulerProps> = ({ onChange }) => {
               onClick={() => handleTimeSelect(time)}
               className={`py-2 rounded-lg text-sm font-medium transition-all duration-300 ${
                 selectedTime === time
-                  ? 'bg-ninja-orange text-white'
+                  ? 'bg-transparent text-ninja-red border border-ninja-red'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
               }`}
             >
