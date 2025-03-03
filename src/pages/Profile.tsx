@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
-import { User, MapPin, CreditCard, Clock, FileText, HelpCircle, LogOut, Camera } from 'lucide-react';
+import { User, MapPin, CreditCard, Clock, FileText, HelpCircle, LogOut, Camera, UserRoundPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 const Profile: React.FC = () => {
@@ -95,33 +95,35 @@ const Profile: React.FC = () => {
                     style={{ backgroundImage: `url(${user.profilePicture})` }}
                     onClick={handleProfilePictureClick}
                   >
-                    <div className="absolute bottom-0 right-0 bg-ninja-red rounded-full p-1">
+                    <div className="absolute bottom-0 right-0 bg-ninja-blue rounded-full p-1.5">
                       <Camera className="w-3 h-3 text-white" />
                     </div>
                   </div>
                 ) : (
                   <div 
-                    className="w-16 h-16 bg-gradient-to-br from-ninja-red to-ninja-black rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer relative"
+                    className="w-16 h-16 bg-gradient-to-br from-ninja-blue to-ninja-orange rounded-full flex items-center justify-center text-white text-2xl font-bold cursor-pointer relative"
                     onClick={handleProfilePictureClick}
                   >
                     {user.name.charAt(0)}
-                    <div className="absolute bottom-0 right-0 bg-ninja-red rounded-full p-1">
+                    <div className="absolute bottom-0 right-0 bg-ninja-blue rounded-full p-1.5">
                       <Camera className="w-3 h-3 text-white" />
                     </div>
                   </div>
                 )}
               </div>
-              <div>
-                <h2 className="text-xl font-bold">{user.name}</h2>
-                <p className="text-gray-600">{user.email}</p>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="text-ninja-red p-0 h-auto mt-1"
-                  onClick={handleProfilePictureClick}
-                >
-                  Change Photo
-                </Button>
+              <div className="flex items-start">
+                <div>
+                  <h2 className="text-xl font-bold">{user.name}</h2>
+                  <p className="text-gray-600">{user.email}</p>
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    className="text-ninja-blue p-0 h-auto mt-1 flex items-center gap-1.5"
+                    onClick={handleProfilePictureClick}
+                  >
+                    <UserRoundPlus className="w-4 h-4" /> Change Photo
+                  </Button>
+                </div>
               </div>
             </div>
           </div>
@@ -135,7 +137,7 @@ const Profile: React.FC = () => {
                 className="w-full flex items-center justify-between py-4 px-5 hover:bg-gray-50 transition-colors"
               >
                 <div className="flex items-center">
-                  <item.icon className="w-5 h-5 text-ninja-red mr-3" />
+                  <item.icon className="w-5 h-5 text-ninja-blue mr-3" />
                   <span>{item.label}</span>
                 </div>
                 <div className="text-gray-400">›</div>

@@ -27,10 +27,8 @@ const Track: React.FC = () => {
   useEffect(() => {
     // Extract order ID from URL query params
     const params = new URLSearchParams(location.search);
-    const id = params.get('orderId');
-    if (id) {
-      setOrderId(id);
-    }
+    const id = params.get('orderId') || 'demo-order-123'; // Provide a default ID if none in URL
+    setOrderId(id);
   }, [location]);
   
   // Listener for delivery status changes coming from TrackingMap
