@@ -4,9 +4,10 @@ import { useLocation } from 'react-router-dom';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import TrackingMap from '@/components/ui/TrackingMap';
-import { Fuel, CalendarClock, MapPin } from 'lucide-react';
+import { Fuel, CalendarClock, MapPin, CheckCircle } from 'lucide-react';
 import Confetti from '@/components/ui/Confetti';
 import ReviewPrompt from '@/components/ui/ReviewPrompt';
+import { format } from 'date-fns';
 
 const Track: React.FC = () => {
   const location = useLocation();
@@ -125,7 +126,13 @@ const Track: React.FC = () => {
             </>
           ) : (
             <div className="text-center py-10 glass-card p-6 animate-fade-in">
-              <CalendarClock className="w-16 h-16 text-navy-blue/30 mx-auto mb-4" />
+              <div className="flex items-center justify-center mb-4">
+                {orderExpired ? (
+                  <CheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+                ) : (
+                  <CalendarClock className="w-16 h-16 text-navy-blue/30 mx-auto" />
+                )}
+              </div>
               <h3 className="text-xl font-semibold text-navy-blue mb-2">
                 {orderExpired ? 'Order Completed' : 'No Active Orders'}
               </h3>
@@ -135,9 +142,15 @@ const Track: React.FC = () => {
                   : 'You don\'t have any active orders to track at the moment.'}
               </p>
               {orderExpired && deliveryTimestamp && (
-                <p className="text-sm text-gray-500 mb-4">
-                  Delivery completed on {new Date(deliveryTimestamp).toLocaleDateString()} at {new Date(deliveryTimestamp).toLocaleTimeString()}
-                </p>
+                <div className="mb-6">
+                  <div className="flex items-center justify-center gap-2 text-green-600 font-medium mb-2">
+                    <CheckCircle className="w-5 h-5" />
+                    <span>Delivery Successful</span>
+                  </div>
+                  <p className="text-sm text-gray-500">
+                    Delivered on {format(new Date(deliveryTimestamp), 'MMM d, yyyy')} at {format(new Date(deliveryTimestamp), 'h:mm a')}
+                  </p>
+                </div>
               )}
               <a 
                 href="/book" 
