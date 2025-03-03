@@ -35,13 +35,13 @@ const Index: React.FC = () => {
       <Header />
       
       <main className="container max-w-md mx-auto px-4 pb-24 overflow-hidden">
-        {/* Hero Section with Gas Pump Background */}
+        {/* Hero Section with Person Pumping Gas Background */}
         <section className="pt-6 pb-10 text-center rounded-2xl relative overflow-hidden mb-6">
-          {/* Background Image - Using gas station image instead */}
+          {/* Background Image - Person pumping gas */}
           <div 
             className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0" 
             style={{ 
-              backgroundImage: "url('https://images.unsplash.com/photo-1545235617-9465d2a55698?auto=format&fit=crop&q=80')",
+              backgroundImage: "url('https://images.unsplash.com/photo-1605039852531-a4c6de1d9c1b?auto=format&fit=crop&q=80')",
               backgroundPosition: "center center",
               filter: "brightness(0.85)"
             }}
