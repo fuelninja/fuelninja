@@ -1,5 +1,5 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { MapPin, Navigation, Clock, CheckCircle } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
@@ -21,6 +21,9 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
     driverName: 'Michael Rodriguez',
     eta: '25-30 minutes'
   });
+  
+  // Use a ref to track if delivery has been completed
+  const deliveryCompletedRef = useRef(false);
   
   useEffect(() => {
     // Notify parent of initial status
@@ -61,6 +64,12 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
       });
       
       const interval = setInterval(() => {
+        // Check if we've already reached the delivered state
+        if (deliveryCompletedRef.current) {
+          clearInterval(interval);
+          return;
+        }
+        
         if (index < statuses.length) {
           const newStatus = statuses[index];
           setDeliveryStatus(newStatus);
@@ -68,6 +77,11 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
           // Notify parent component about status change
           if (onStatusChange) {
             onStatusChange(newStatus.status);
+          }
+          
+          // Mark as completed if we've reached the delivered state
+          if (newStatus.status === 'delivered') {
+            deliveryCompletedRef.current = true;
           }
           
           index++;
