@@ -56,8 +56,8 @@ export default {
                 ninja: {
                     black: '#121212',
                     white: '#FCFCFC',
-                    orange: '#F97316',
-                    green: '#22C55E'
+                    red: '#ea384c',
+                    darkred: '#c01f32'
                 }
 			},
 			borderRadius: {

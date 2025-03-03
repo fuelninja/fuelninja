@@ -14,10 +14,10 @@
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
 
-    --primary: 24 100% 54%;
+    --primary: 353 75% 57%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 142 70% 45%;
+    --secondary: 0 0% 7%;
     --secondary-foreground: 0 0% 98%;
 
     --muted: 210 40% 96.1%;
@@ -31,7 +31,7 @@
 
     --border: 214.3 31.8% 91.4%;
     --input: 214.3 31.8% 91.4%;
-    --ring: 24 100% 54%;
+    --ring: 353 75% 57%;
 
     --radius: 1rem;
   }
@@ -55,19 +55,19 @@
   }
   
   .input-focused {
-    @apply ring-2 ring-ninja-orange transition-all duration-300;
+    @apply ring-2 ring-ninja-red transition-all duration-300;
   }
   
   .button-primary {
-    @apply bg-ninja-orange text-white rounded-xl px-4 py-3 font-medium shadow-lg hover:shadow-xl hover:bg-opacity-90 transition-all duration-300;
+    @apply bg-ninja-red text-white rounded-xl px-4 py-3 font-medium shadow-lg hover:shadow-xl hover:bg-opacity-90 transition-all duration-300;
   }
   
   .button-secondary {
-    @apply bg-ninja-green text-white rounded-xl px-4 py-3 font-medium shadow-lg hover:shadow-xl hover:bg-opacity-90 transition-all duration-300;
+    @apply bg-ninja-black text-white rounded-xl px-4 py-3 font-medium shadow-lg hover:shadow-xl hover:bg-opacity-90 transition-all duration-300;
   }
   
   .text-gradient {
-    @apply bg-gradient-to-r from-ninja-orange to-ninja-green bg-clip-text text-transparent;
+    @apply bg-gradient-to-r from-ninja-red to-ninja-black bg-clip-text text-transparent;
   }
   
   .section-animation {

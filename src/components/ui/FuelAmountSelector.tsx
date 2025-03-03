@@ -48,9 +48,9 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
         <div className="relative">
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="flex items-center text-sm font-medium text-gray-600 hover:text-ninja-orange transition-colors"
+            className="flex items-center text-sm font-medium text-gray-600 hover:text-ninja-red transition-colors"
           >
-            <Fuel className="w-5 h-5 text-ninja-orange mr-1" />
+            <Fuel className="w-5 h-5 text-ninja-red mr-1" />
             <span>{fuelType}</span>
             <ChevronDown className="w-4 h-4 ml-1" />
           </button>
@@ -61,7 +61,7 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
                 <button
                   key={type}
                   className={`block w-full text-left px-4 py-2 text-sm ${
-                    type === fuelType ? 'bg-gray-100 text-ninja-orange' : 'text-gray-700 hover:bg-gray-50'
+                    type === fuelType ? 'bg-gray-100 text-ninja-red' : 'text-gray-700 hover:bg-gray-50'
                   }`}
                   onClick={() => handleFuelTypeChange(type)}
                 >
@@ -100,7 +100,7 @@ const FuelAmountSelector: React.FC<FuelAmountSelectorProps> = ({ onChange }) => 
         <button
           className={`px-4 py-2 rounded-xl font-medium transition-all duration-300 ${
             isFull 
-              ? 'bg-ninja-orange text-white' 
+              ? 'bg-ninja-red text-white' 
               : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
           }`}
           onClick={handleFullTankToggle}
