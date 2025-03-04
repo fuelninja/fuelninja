@@ -17,7 +17,7 @@ import Receipts from '@/pages/profile/Receipts';
 import HelpSupport from '@/pages/profile/HelpSupport';
 import AdminDashboard from '@/pages/AdminDashboard';
 import ProtectedRoute from '@/components/ProtectedRoute';
-import { AuthProvider } from '@/contexts/AuthContext';
+import { AuthProvider } from '@/contexts/auth';
 import { Toaster } from "@/components/ui/toaster";
 
 function App() {
