@@ -21,10 +21,19 @@ export interface OrderData {
 export interface UserData {
   name?: string;
   email?: string;
+  phone?: string;
+  address?: string;
   savedAddresses?: string[];
   paymentMethods?: {
     cardName: string;
     cardNumberLast4: string;
     expDate: string;
+  }[];
+  vehicles?: {
+    id: number;
+    make: string;
+    model: string;
+    year: string;
+    color: string;
   }[];
 }
