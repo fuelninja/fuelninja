@@ -45,7 +45,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Simple mock authentication (in real app, this would be a server call)
       // Hard-coded admin credentials for demo purposes
-      if (email === 'admin@fuelninja.com' && password === 'admin123') {
+      if (email === 'fuelninjahelp@gmail.com' && password === 'admin123') {
         const adminUser: AuthUser = {
           id: 'admin-1',
           name: 'Admin User',

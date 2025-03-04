@@ -139,7 +139,7 @@ const Auth: React.FC = () => {
           
           {/* Admin login hint for demo purposes */}
           <div className="mt-8 pt-6 border-t border-gray-200 text-xs text-gray-500">
-            <p>Admin demo access: admin@fuelninja.com / admin123</p>
+            <p>Admin demo access: fuelninjahelp@gmail.com / admin123</p>
           </div>
         </div>
       </main>
