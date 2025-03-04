@@ -37,3 +37,11 @@ export interface UserData {
     color: string;
   }[];
 }
+
+export interface PaymentCardValidation {
+  isValid: boolean;
+  cardType: 'Visa' | 'Mastercard' | 'American Express' | 'Discover' | 'Unknown';
+  last4: string;
+}
+
+export type CardType = 'Visa' | 'Mastercard' | 'American Express' | 'Discover' | 'Credit Card';

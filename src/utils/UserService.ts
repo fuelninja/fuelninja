@@ -1,3 +1,4 @@
+
 import { toast } from "sonner";
 import { UserData } from "./types";
 import { BaseService } from "./BaseService";
@@ -64,10 +65,40 @@ export class UserService extends BaseService {
         userData.paymentMethods = [];
       }
       
-      userData.paymentMethods.push(paymentMethod);
+      // Prevent duplicates by checking last4 and expiration
+      const isDuplicate = userData.paymentMethods.some(
+        method => 
+          method.cardNumberLast4 === paymentMethod.cardNumberLast4 && 
+          method.expDate === paymentMethod.expDate
+      );
+      
+      if (!isDuplicate) {
+        userData.paymentMethods.push(paymentMethod);
+      }
+      
       return this.saveUserData(userData);
     } catch (error) {
       console.error('Error adding payment method:', error);
+      return false;
+    }
+  }
+  
+  public removePaymentMethod(last4: string): boolean {
+    try {
+      const userData = this.getUserData();
+      
+      if (!userData.paymentMethods) {
+        return true; // Nothing to remove
+      }
+      
+      const updatedPaymentMethods = userData.paymentMethods.filter(
+        method => method.cardNumberLast4 !== last4
+      );
+      
+      userData.paymentMethods = updatedPaymentMethods;
+      return this.saveUserData(userData);
+    } catch (error) {
+      console.error('Error removing payment method:', error);
       return false;
     }
   }

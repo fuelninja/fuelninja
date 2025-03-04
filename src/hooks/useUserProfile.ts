@@ -27,9 +27,13 @@ export const useUserProfile = () => {
     vehicles: []
   });
   
+  const [isLoading, setIsLoading] = useState(true);
+  
   // Load user data on hook init
   useEffect(() => {
+    setIsLoading(true);
     const storedData = DataService.getUserData();
+    
     if (storedData) {
       // Initialize with defaults for any missing fields
       setUserData({
@@ -40,16 +44,29 @@ export const useUserProfile = () => {
         vehicles: storedData.vehicles || []
       });
     }
+    setIsLoading(false);
   }, []);
 
   // Save updated user data
   const saveUserData = (updatedData: UserProfileData) => {
-    setUserData(updatedData);
-    DataService.saveUserData(updatedData);
+    try {
+      setUserData(updatedData);
+      const success = DataService.saveUserData(updatedData);
+      
+      if (success) {
+        toast.success("Profile information saved successfully");
+      } else {
+        toast.error("Failed to save profile information");
+      }
+    } catch (error) {
+      console.error("Error saving user profile:", error);
+      toast.error("An error occurred while saving profile information");
+    }
   };
 
   return {
     userData,
-    saveUserData
+    saveUserData,
+    isLoading
   };
 };
