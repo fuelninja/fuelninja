@@ -8,6 +8,8 @@ import ReviewPrompt from '@/components/ui/ReviewPrompt';
 import OrderDetails from '@/components/tracking/OrderDetails';
 import OrderExpiredView from '@/components/tracking/OrderExpiredView';
 import { useOrderTracking } from '@/hooks/useOrderTracking';
+import { useAuth } from '@/contexts/auth';
+import AdminOrdersPage from '@/components/admin/AdminOrdersPage';
 
 const Track: React.FC = () => {
   const {
@@ -25,6 +27,8 @@ const Track: React.FC = () => {
     handleStatusChange
   } = useOrderTracking();
 
+  const { isAdmin } = useAuth();
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
       <Header />
@@ -33,31 +37,37 @@ const Track: React.FC = () => {
       <ReviewPrompt isOpen={showReviewPrompt} onClose={() => setShowReviewPrompt(false)} />
       
       <main className="container max-w-md mx-auto px-4 pb-24">
-        <h1 className="text-2xl font-bold my-6 animate-fade-in text-navy-blue">Track Delivery</h1>
+        <h1 className="text-2xl font-bold my-6 animate-fade-in text-navy-blue">
+          {isAdmin ? "Manage Orders" : "Track Delivery"}
+        </h1>
         
-        <div className="space-y-6">
-          {hasActiveOrder ? (
-            <>
-              <TrackingMap 
-                orderId={orderId} 
-                onStatusChange={handleStatusChange} 
-                driverInfo={assignedDriver}
+        {isAdmin ? (
+          <AdminOrdersPage />
+        ) : (
+          <div className="space-y-6">
+            {hasActiveOrder ? (
+              <>
+                <TrackingMap 
+                  orderId={orderId} 
+                  onStatusChange={handleStatusChange} 
+                  driverInfo={assignedDriver}
+                />
+                
+                <OrderDetails orderData={orderData} />
+                
+                {/* Vehicle Location Note */}
+                <div className="text-center text-navy-blue animate-fade-in animation-delay-300">
+                  If we have any trouble finding your vehicle, we will give you a call!
+                </div>
+              </>
+            ) : (
+              <OrderExpiredView 
+                orderExpired={orderExpired} 
+                deliveryTimestamp={deliveryTimestamp} 
               />
-              
-              <OrderDetails orderData={orderData} />
-              
-              {/* Vehicle Location Note */}
-              <div className="text-center text-navy-blue animate-fade-in animation-delay-300">
-                If we have any trouble finding your vehicle, we will give you a call!
-              </div>
-            </>
-          ) : (
-            <OrderExpiredView 
-              orderExpired={orderExpired} 
-              deliveryTimestamp={deliveryTimestamp} 
-            />
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </main>
       
       <BottomNav />
