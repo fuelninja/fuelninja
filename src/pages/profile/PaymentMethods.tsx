@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
@@ -9,6 +8,7 @@ import { ChevronLeft, CreditCard, Plus, Edit, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import DataService from '@/utils/DataService';
 
 type PaymentMethod = {
   id: number;
@@ -21,23 +21,8 @@ type PaymentMethod = {
 const PaymentMethods: React.FC = () => {
   const navigate = useNavigate();
   
-  // State for payment methods
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([
-    {
-      id: 1,
-      type: 'Visa',
-      last4: '4242',
-      expiry: '04/25',
-      isDefault: true
-    },
-    {
-      id: 2,
-      type: 'Mastercard',
-      last4: '5555',
-      expiry: '07/26',
-      isDefault: false
-    }
-  ]);
+  // State for payment methods - initialize empty
+  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
   
   // State for dialogs
   const [addDialogOpen, setAddDialogOpen] = useState(false);
@@ -95,6 +80,14 @@ const PaymentMethods: React.FC = () => {
     }
     
     setPaymentMethods([...updatedMethods, newPayment]);
+    
+    // Save to DataService
+    DataService.addPaymentMethod({
+      cardName: formData.cardType,
+      cardNumberLast4: last4,
+      expDate: formData.expiryDate
+    });
+    
     setAddDialogOpen(false);
     toast.success("Payment method added");
     resetForm();

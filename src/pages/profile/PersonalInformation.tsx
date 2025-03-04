@@ -1,5 +1,4 @@
-
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
@@ -9,6 +8,7 @@ import { ChevronLeft, Edit, Plus, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import DataService from '@/utils/DataService';
 
 interface UserData {
   name: string;
@@ -27,17 +27,22 @@ interface UserData {
 const PersonalInformation: React.FC = () => {
   const navigate = useNavigate();
   
-  // State for user data
+  // Initialize with empty user data
   const [userData, setUserData] = useState<UserData>({
-    name: 'Alex Johnson',
-    email: 'alex@example.com',
-    phone: '(713) 555-1234',
-    address: '123 Main St, Houston, TX 77002',
-    vehicles: [
-      { id: 1, make: 'Toyota', model: 'Camry', year: '2020', color: 'Silver' },
-      { id: 2, make: 'Honda', model: 'CR-V', year: '2019', color: 'Black' }
-    ]
+    name: '',
+    email: '',
+    phone: '',
+    address: '',
+    vehicles: []
   });
+  
+  // Load user data on component mount
+  useEffect(() => {
+    const data = DataService.getUserData();
+    if (data) {
+      setUserData(data);
+    }
+  }, []);
   
   // State for dialogs
   const [contactDialogOpen, setContactDialogOpen] = useState(false);
@@ -116,13 +121,16 @@ const PersonalInformation: React.FC = () => {
       return;
     }
     
-    setUserData({
+    const updatedData = {
       ...userData,
       name: contactForm.name,
       email: contactForm.email,
       phone: contactForm.phone,
       address: contactForm.address,
-    });
+    };
+    
+    setUserData(updatedData);
+    DataService.saveUserData(updatedData);
     
     setContactDialogOpen(false);
     toast.success("Contact information updated");

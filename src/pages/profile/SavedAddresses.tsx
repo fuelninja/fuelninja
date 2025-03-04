@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
@@ -15,6 +14,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
+import DataService from '@/utils/DataService';
 
 interface Address {
   id: number;
@@ -30,6 +30,9 @@ interface Address {
 const SavedAddresses: React.FC = () => {
   const navigate = useNavigate();
   
+  // Initialize with empty addresses
+  const [addresses, setAddresses] = useState<Address[]>([]);
+  
   // State for modal and form
   const [open, setOpen] = useState(false);
   const [editingAddress, setEditingAddress] = useState<Address | null>(null);
@@ -41,40 +44,6 @@ const SavedAddresses: React.FC = () => {
     zip: '',
     isDefault: false
   });
-
-  // Mock address data - would come from user profile in a real app
-  const [addresses, setAddresses] = useState<Address[]>([
-    {
-      id: 1,
-      label: 'Home',
-      address: '123 Main St, Houston, TX 77002',
-      street: '123 Main St',
-      city: 'Houston',
-      state: 'TX',
-      zip: '77002',
-      isDefault: true
-    },
-    {
-      id: 2,
-      label: 'Work',
-      address: '456 Corporate Ave, Houston, TX 77001',
-      street: '456 Corporate Ave',
-      city: 'Houston',
-      state: 'TX',
-      zip: '77001',
-      isDefault: false
-    },
-    {
-      id: 3,
-      label: 'Mom\'s House',
-      address: '789 Family Rd, Katy, TX 77494',
-      street: '789 Family Rd',
-      city: 'Katy',
-      state: 'TX',
-      zip: '77494',
-      isDefault: false
-    }
-  ]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -143,11 +112,15 @@ const SavedAddresses: React.FC = () => {
             ? { ...address, isDefault: false } 
             : address
       ));
+      
+      // Save to DataService
+      DataService.addSavedAddress(fullAddress);
+      
       toast.success('Address updated successfully');
     } else {
       // Add new address
       const newAddress: Address = {
-        id: Date.now(), // Simple id generation
+        id: Date.now(),
         label: formData.label,
         street: formData.street,
         city: formData.city,
@@ -157,7 +130,9 @@ const SavedAddresses: React.FC = () => {
         isDefault: formData.isDefault
       };
       
-      // If this is set as default, update other addresses
+      // Save to DataService
+      DataService.addSavedAddress(fullAddress);
+      
       if (formData.isDefault) {
         setAddresses(prev => prev.map(address => ({
           ...address,
