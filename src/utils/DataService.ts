@@ -27,6 +27,7 @@ class DataService {
   public getOrderById = (orderId: string) => this.orderService.getOrderById(orderId);
   public saveOrder = (orderData: import("./types").OrderData) => this.orderService.saveOrder(orderData);
   public updateOrderStatus = (orderId: string, status: string) => this.orderService.updateOrderStatus(orderId, status);
+  public clearAllOrders = () => this.orderService.clearAllOrders();
   
   // User operations
   public getUserData = () => this.userService.getUserData();
@@ -37,7 +38,7 @@ class DataService {
   
   // Clear all data
   public clearAllData(): void {
-    localStorage.removeItem('fuelninja-orders');
+    this.orderService.clearAllOrders();
     localStorage.removeItem('fuelninja-user');
     
     const userId = localStorage.getItem('fuelninja-auth');

@@ -1,4 +1,3 @@
-
 import { toast } from "sonner";
 import { OrderData } from "./types";
 import { BaseService } from "./BaseService";
@@ -8,6 +7,13 @@ export class OrderService extends BaseService {
   
   private constructor() {
     super();
+    this.initializeEmptyOrders();
+  }
+  
+  private initializeEmptyOrders() {
+    if (!localStorage.getItem('fuelninja-orders')) {
+      localStorage.setItem('fuelninja-orders', JSON.stringify([]));
+    }
   }
   
   public static getInstance(): OrderService {
@@ -24,6 +30,18 @@ export class OrderService extends BaseService {
     } catch (error) {
       console.error('Error getting orders:', error);
       return [];
+    }
+  }
+  
+  public clearAllOrders(): boolean {
+    try {
+      localStorage.setItem('fuelninja-orders', JSON.stringify([]));
+      toast("All orders have been cleared");
+      return true;
+    } catch (error) {
+      console.error('Error clearing orders:', error);
+      toast("Failed to clear orders");
+      return false;
     }
   }
   

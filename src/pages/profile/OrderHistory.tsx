@@ -1,47 +1,33 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, Clock, Calendar, MapPin, Fuel } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import DataService, { OrderData } from '@/utils/DataService';
+import { format } from 'date-fns';
 
 const OrderHistory: React.FC = () => {
   const navigate = useNavigate();
+  const [orders, setOrders] = useState<OrderData[]>([]);
   
-  // Mock order history data - would come from user profile in a real app
-  const orders = [
-    {
-      id: 'ORD-001234',
-      date: 'May 15, 2023',
-      time: '2:30 PM',
-      status: 'Completed',
-      gallons: 8,
-      price: 31.92,
-      location: '123 Main St, Houston, TX',
-      vehicle: '2020 Toyota Camry (Silver)'
-    },
-    {
-      id: 'ORD-001122',
-      date: 'April 28, 2023',
-      time: '10:15 AM',
-      status: 'Completed',
-      gallons: 12,
-      price: 47.88,
-      location: '456 Corporate Ave, Houston, TX',
-      vehicle: '2020 Toyota Camry (Silver)'
-    },
-    {
-      id: 'ORD-000987',
-      date: 'April 10, 2023',
-      time: '3:45 PM',
-      status: 'Completed',
-      gallons: 5,
-      price: 19.95,
-      location: '789 Family Rd, Katy, TX',
-      vehicle: '2019 Honda CR-V (Black)'
-    }
-  ];
+  useEffect(() => {
+    // Fetch user's orders
+    const userOrders = DataService.getUserOrders();
+    setOrders(userOrders);
+  }, []);
+  
+  const formatTimestamp = (timestamp: number) => {
+    return format(new Date(timestamp), 'MMM d, yyyy h:mm a');
+  };
+  
+  const getOrderTotal = (order: OrderData) => {
+    // Calculate based on a sample price of $3.99 per gallon plus service fee
+    const fuelCost = order.amount * 3.99;
+    const serviceFee = 6.99;
+    return (fuelCost + serviceFee).toFixed(2);
+  };
   
   return (
     <div className="min-h-screen bg-gradient-to-b from-white to-gray-50">
@@ -64,14 +50,14 @@ const OrderHistory: React.FC = () => {
           {orders.length > 0 ? (
             <div className="glass-card divide-y divide-gray-100 animate-fade-in">
               {orders.map((order) => (
-                <div key={order.id} className="p-4">
+                <div key={order.orderId} className="p-4">
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center">
                       <div className="bg-gray-100 p-2 rounded-full mr-3">
                         <Fuel className="h-5 w-5 text-ninja-red" />
                       </div>
                       <div>
-                        <h3 className="font-medium">{order.id}</h3>
+                        <h3 className="font-medium">#{order.orderId.substring(0, 8)}</h3>
                         <p className="text-sm text-gray-600">{order.status}</p>
                       </div>
                     </div>
@@ -79,7 +65,7 @@ const OrderHistory: React.FC = () => {
                       variant="outline" 
                       size="sm" 
                       className="text-xs"
-                      onClick={() => navigate(`/profile/receipts?order=${order.id}`)}
+                      onClick={() => navigate(`/profile/receipts?order=${order.orderId}`)}
                     >
                       View Receipt
                     </Button>
@@ -90,7 +76,7 @@ const OrderHistory: React.FC = () => {
                       <Calendar className="h-4 w-4 text-gray-500 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium">Date & Time</p>
-                        <p className="text-sm text-gray-600">{order.date} at {order.time}</p>
+                        <p className="text-sm text-gray-600">{formatTimestamp(order.createdAt)} ({order.scheduledTime})</p>
                       </div>
                     </div>
                     
@@ -98,7 +84,7 @@ const OrderHistory: React.FC = () => {
                       <Fuel className="h-4 w-4 text-gray-500 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium">Fuel</p>
-                        <p className="text-sm text-gray-600">{order.gallons} gallons • ${order.price.toFixed(2)}</p>
+                        <p className="text-sm text-gray-600">{order.amount} gallons • ${getOrderTotal(order)}</p>
                       </div>
                     </div>
                     
@@ -106,8 +92,10 @@ const OrderHistory: React.FC = () => {
                       <MapPin className="h-4 w-4 text-gray-500 mt-0.5" />
                       <div>
                         <p className="text-sm font-medium">Delivery Location</p>
-                        <p className="text-sm text-gray-600">{order.location}</p>
-                        <p className="text-sm text-gray-600">{order.vehicle}</p>
+                        <p className="text-sm text-gray-600">{order.deliveryAddress}</p>
+                        <p className="text-sm text-gray-600">
+                          {order.carInfo.year} {order.carInfo.make} {order.carInfo.model} ({order.carInfo.color})
+                        </p>
                       </div>
                     </div>
                   </div>
