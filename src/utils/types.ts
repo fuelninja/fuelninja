@@ -17,6 +17,7 @@ export interface OrderData {
   deliveredAt?: number;
   userId?: string;
   driverInfo?: DeliveryDriverInfo;
+  paymentId?: string;  // Add payment ID from Stripe
 }
 
 export interface UserData {
@@ -29,6 +30,7 @@ export interface UserData {
     cardName: string;
     cardNumberLast4: string;
     expDate: string;
+    paymentMethodId?: string;  // Add Stripe payment method ID
   }[];
   vehicles?: {
     id: number;
