@@ -11,6 +11,7 @@ import StatisticCard from '@/components/admin/StatisticCard';
 import OrdersTable from '@/components/admin/OrdersTable';
 import OrderDetailDialog from '@/components/admin/OrderDetailDialog';
 import StatusFilterTabs from '@/components/admin/StatusFilterTabs';
+import EarningsPanel from '@/components/admin/EarningsPanel';
 
 const AdminDashboard: React.FC = () => {
   const [orders, setOrders] = useState<OrderData[]>([]);
@@ -19,6 +20,7 @@ const AdminDashboard: React.FC = () => {
   const [selectedOrder, setSelectedOrder] = useState<OrderData | null>(null);
   const [isOrderDetailOpen, setIsOrderDetailOpen] = useState(false);
   const [filterStatus, setFilterStatus] = useState<string>("all");
+  const [activeTab, setActiveTab] = useState<string>("orders");
   const { logout } = useAuth();
   
   const loadData = () => {
@@ -73,59 +75,69 @@ const AdminDashboard: React.FC = () => {
         onRefresh={loadData}
         onLogout={logout}
         isLoading={isLoading}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
       />
       
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <StatisticCard 
-            icon={Truck}
-            iconColor="ninja-blue"
-            label="All Orders"
-            value={orders.length}
-          />
-          
-          <StatisticCard 
-            icon={Clock}
-            iconColor="yellow"
-            label="Pending"
-            value={getPendingCount()}
-          />
-          
-          <StatisticCard 
-            icon={Truck}
-            iconColor="blue"
-            label="In Progress"
-            value={getInProgressCount()}
-          />
-          
-          <StatisticCard 
-            icon={BarChart}
-            iconColor="green"
-            label="Total Revenue"
-            value={`$${calculateTotalRevenue()}`}
-          />
-        </div>
-        
-        <div className="bg-white shadow rounded-lg overflow-hidden">
-          <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
-            <h3 className="text-lg font-medium text-gray-900">Manage Orders</h3>
+        {activeTab === "orders" ? (
+          // Orders Management Tab
+          <>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+              <StatisticCard 
+                icon={Truck}
+                iconColor="ninja-blue"
+                label="All Orders"
+                value={orders.length}
+              />
+              
+              <StatisticCard 
+                icon={Clock}
+                iconColor="yellow"
+                label="Pending"
+                value={getPendingCount()}
+              />
+              
+              <StatisticCard 
+                icon={Truck}
+                iconColor="blue"
+                label="In Progress"
+                value={getInProgressCount()}
+              />
+              
+              <StatisticCard 
+                icon={BarChart}
+                iconColor="green"
+                label="Total Revenue"
+                value={`$${calculateTotalRevenue()}`}
+              />
+            </div>
             
-            <StatusFilterTabs 
-              totalCount={orders.length}
-              pendingCount={getPendingCount()}
-              inProgressCount={getInProgressCount()}
-              deliveredCount={getDeliveredCount()}
-              onFilterChange={setFilterStatus}
-            />
-          </div>
-          
-          <div className="overflow-x-auto">
-            <OrdersTable 
-              orders={filteredOrders}
-              onViewOrder={handleViewOrder}
-            />
-          </div>
-        </div>
+            <div className="bg-white shadow rounded-lg overflow-hidden">
+              <div className="px-6 py-5 border-b border-gray-200 flex justify-between items-center">
+                <h3 className="text-lg font-medium text-gray-900">Manage Orders</h3>
+                
+                <StatusFilterTabs 
+                  totalCount={orders.length}
+                  pendingCount={getPendingCount()}
+                  inProgressCount={getInProgressCount()}
+                  deliveredCount={getDeliveredCount()}
+                  onFilterChange={setFilterStatus}
+                />
+              </div>
+              
+              <div className="overflow-x-auto">
+                <OrdersTable 
+                  orders={filteredOrders}
+                  onViewOrder={handleViewOrder}
+                />
+              </div>
+            </div>
+          </>
+        ) : (
+          // Earnings & Payouts Tab
+          <EarningsPanel orders={orders} />
+        )}
       </main>
 
       <OrderDetailDialog 
