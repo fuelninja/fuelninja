@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { OrderData } from '@/utils/DataService';
+import { DeliveryDriverInfo } from '@/utils/types';
 import { format } from 'date-fns';
-import { MapPin, Calendar } from 'lucide-react';
+import { MapPin, Calendar, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -13,6 +14,13 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { Separator } from "@/components/ui/separator";
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import OrderStatusBadge from './OrderStatusBadge';
 
 interface OrderDetailDialogProps {
@@ -28,11 +36,65 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
   order, 
   onStatusChange 
 }) => {
+  const [availableDrivers, setAvailableDrivers] = useState<DeliveryDriverInfo[]>([]);
+  const [selectedDriverIndex, setSelectedDriverIndex] = useState<string>("");
+  
+  // Load available drivers from system config
+  useEffect(() => {
+    if (open) {
+      try {
+        const configData = localStorage.getItem('fuelninja-tracking-config');
+        if (configData) {
+          const config = JSON.parse(configData);
+          if (config.activeDrivers && Array.isArray(config.activeDrivers)) {
+            setAvailableDrivers(config.activeDrivers);
+            
+            // If order has a driver assigned, try to find and select that driver
+            if (order?.driverInfo) {
+              const driverIndex = config.activeDrivers.findIndex(
+                (d: DeliveryDriverInfo) => d.name === order.driverInfo?.name
+              );
+              if (driverIndex >= 0) {
+                setSelectedDriverIndex(driverIndex.toString());
+              }
+            }
+          }
+        }
+      } catch (error) {
+        console.error('Error loading drivers:', error);
+      }
+    }
+  }, [open, order]);
+  
   const formatTimestamp = (timestamp: number) => {
     return format(new Date(timestamp), 'MMM d, yyyy h:mm a');
   };
 
   if (!order) return null;
+  
+  const assignDriver = () => {
+    if (!selectedDriverIndex || !order) return;
+    
+    const driverIndex = parseInt(selectedDriverIndex);
+    if (isNaN(driverIndex) || driverIndex < 0 || driverIndex >= availableDrivers.length) return;
+    
+    const selectedDriver = availableDrivers[driverIndex];
+    
+    // Import and use OrderService directly to assign driver
+    import('@/utils/OrderService').then((OrderService) => {
+      const success = OrderService.default.assignDriverToOrder(order.orderId, selectedDriver);
+      if (success) {
+        // Update order status to confirmed if it's still pending
+        if (order.status === 'pending') {
+          onStatusChange(order.orderId, 'confirmed');
+        } else {
+          // Force dialog to close and reopen to see changes
+          onOpenChange(false);
+          setTimeout(() => onOpenChange(true), 100);
+        }
+      }
+    });
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -48,6 +110,46 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
           <div className="flex justify-between items-center">
             <h3 className="font-semibold">Order Status</h3>
             <OrderStatusBadge status={order.status} />
+          </div>
+          
+          <Separator />
+          
+          {/* Driver Assignment Section */}
+          <div>
+            <h3 className="font-semibold mb-2">Assign Driver</h3>
+            <div className="flex gap-2">
+              <Select 
+                value={selectedDriverIndex} 
+                onValueChange={setSelectedDriverIndex}
+              >
+                <SelectTrigger className="flex-1">
+                  <SelectValue placeholder="Select a driver" />
+                </SelectTrigger>
+                <SelectContent>
+                  {availableDrivers.length === 0 ? (
+                    <SelectItem value="none" disabled>
+                      No drivers available
+                    </SelectItem>
+                  ) : (
+                    availableDrivers.map((driver, index) => (
+                      <SelectItem key={index} value={index.toString()}>
+                        {driver.name}
+                      </SelectItem>
+                    ))
+                  )}
+                </SelectContent>
+              </Select>
+              <Button onClick={assignDriver} disabled={!selectedDriverIndex}>
+                Assign
+              </Button>
+            </div>
+            
+            {order.driverInfo && (
+              <div className="mt-2 text-sm bg-green-50 text-green-700 p-2 rounded flex items-center">
+                <User className="h-4 w-4 mr-2" />
+                Currently assigned: {order.driverInfo.name}
+              </div>
+            )}
           </div>
           
           <Separator />

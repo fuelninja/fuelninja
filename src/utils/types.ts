@@ -16,6 +16,7 @@ export interface OrderData {
   createdAt: number;
   deliveredAt?: number;
   userId?: string;
+  driverInfo?: DeliveryDriverInfo;
 }
 
 export interface UserData {
@@ -45,3 +46,26 @@ export interface PaymentCardValidation {
 }
 
 export type CardType = 'Visa' | 'Mastercard' | 'American Express' | 'Discover' | 'Credit Card';
+
+export interface DeliveryStep {
+  key: string;
+  label: string;
+  description: string;
+  order: number;
+}
+
+export interface DeliveryDriverInfo {
+  name: string;
+  phone?: string;
+  licensePlate?: string;
+  vehicleModel?: string;
+  vehicleColor?: string;
+  photo?: string;
+  eta?: string;
+  location?: string; 
+}
+
+export interface DeliverySystemConfig {
+  steps: DeliveryStep[];
+  activeDrivers: DeliveryDriverInfo[];
+}

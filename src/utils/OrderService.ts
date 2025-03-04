@@ -1,5 +1,6 @@
+
 import { toast } from "sonner";
-import { OrderData } from "./types";
+import { OrderData, DeliveryDriverInfo } from "./types";
 import { BaseService } from "./BaseService";
 
 export class OrderService extends BaseService {
@@ -73,7 +74,7 @@ export class OrderService extends BaseService {
       const orders = this.getOrders();
       
       const userId = OrderService.getCurrentUserId();
-      if (userId) {
+      if (userId && !orderData.userId) {
         orderData.userId = userId;
       }
       
@@ -114,6 +115,23 @@ export class OrderService extends BaseService {
       return this.saveOrder(updatedOrder);
     } catch (error) {
       console.error(`Error updating order ${orderId} status:`, error);
+      return false;
+    }
+  }
+  
+  public assignDriverToOrder(orderId: string, driverInfo: DeliveryDriverInfo): boolean {
+    try {
+      const order = this.getOrderById(orderId);
+      if (!order) return false;
+      
+      const updatedOrder = {
+        ...order,
+        driverInfo: driverInfo
+      };
+      
+      return this.saveOrder(updatedOrder);
+    } catch (error) {
+      console.error(`Error assigning driver to order ${orderId}:`, error);
       return false;
     }
   }

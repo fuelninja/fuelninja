@@ -9,6 +9,7 @@ import Confetti from '@/components/ui/Confetti';
 import ReviewPrompt from '@/components/ui/ReviewPrompt';
 import { format } from 'date-fns';
 import DataService, { OrderData } from '@/utils/DataService';
+import { DeliveryDriverInfo } from '@/utils/types';
 
 const Track: React.FC = () => {
   const location = useLocation();
@@ -19,6 +20,7 @@ const Track: React.FC = () => {
   const [deliveryStatus, setDeliveryStatus] = useState<string>('');
   const [orderExpired, setOrderExpired] = useState(false);
   const [deliveryTimestamp, setDeliveryTimestamp] = useState<number | null>(null);
+  const [assignedDriver, setAssignedDriver] = useState<DeliveryDriverInfo | undefined>(undefined);
   
   useEffect(() => {
     // Extract order ID from URL query params
@@ -34,6 +36,25 @@ const Track: React.FC = () => {
       if (order) {
         // Set delivery status
         setDeliveryStatus(order.status);
+        
+        // Set assigned driver if available
+        if (order.driverInfo) {
+          setAssignedDriver(order.driverInfo);
+        } else {
+          // If no driver assigned to order, try to get an available driver from config
+          try {
+            const configData = localStorage.getItem('fuelninja-tracking-config');
+            if (configData) {
+              const config = JSON.parse(configData);
+              if (config.activeDrivers && config.activeDrivers.length > 0) {
+                // Just get the first available driver for simplicity
+                setAssignedDriver(config.activeDrivers[0]);
+              }
+            }
+          } catch (error) {
+            console.error('Error loading driver info:', error);
+          }
+        }
         
         // If order is already delivered, set the delivery timestamp
         if (order.status === 'delivered' && order.deliveredAt) {
@@ -110,7 +131,11 @@ const Track: React.FC = () => {
         <div className="space-y-6">
           {hasActiveOrder ? (
             <>
-              <TrackingMap orderId={orderId} onStatusChange={handleStatusChange} />
+              <TrackingMap 
+                orderId={orderId} 
+                onStatusChange={handleStatusChange} 
+                driverInfo={assignedDriver}
+              />
               
               {/* Order Details - Using data from our DataService */}
               <div className="glass-card p-5 space-y-4 animate-fade-in animation-delay-200 bg-white shadow-lg">

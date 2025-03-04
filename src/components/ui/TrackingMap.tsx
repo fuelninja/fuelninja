@@ -1,27 +1,69 @@
+
 import React, { useEffect, useState, useRef } from 'react';
 import { MapPin, Navigation, Clock, CheckCircle } from 'lucide-react';
+import { DeliveryStep, DeliveryDriverInfo } from '@/utils/types';
 
 interface DeliveryStatus {
-  status: 'pending' | 'confirmed' | 'en-route' | 'arriving' | 'delivered';
+  status: string;
   eta?: string;
   driverName?: string;
   driverLocation?: string;
+  driverId?: number;
 }
 
 interface TrackingMapProps {
   orderId: string;
   onStatusChange?: (status: string) => void;
+  driverInfo?: DeliveryDriverInfo;
 }
 
-const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) => {
+const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange, driverInfo }) => {
   const [deliveryStatus, setDeliveryStatus] = useState<DeliveryStatus>({
-    status: 'confirmed', // Changed initial status from 'pending' to 'confirmed'
-    driverName: 'Michael Rodriguez',
-    eta: '25-30 minutes'
+    status: 'confirmed',
+    driverName: driverInfo?.name || 'Assigned Driver',
+    eta: driverInfo?.eta || '25-30 minutes'
   });
+  
+  const [statusSteps, setStatusSteps] = useState<DeliveryStep[]>([]);
   
   // Use a ref to track if delivery has been completed
   const deliveryCompletedRef = useRef(false);
+
+  // Load tracking configuration
+  useEffect(() => {
+    try {
+      const configData = localStorage.getItem('fuelninja-tracking-config');
+      if (configData) {
+        const config = JSON.parse(configData);
+        if (config.steps && Array.isArray(config.steps)) {
+          // Sort steps by order
+          const sortedSteps = [...config.steps].sort((a, b) => a.order - b.order);
+          setStatusSteps(sortedSteps);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading tracking configuration:', error);
+      // Fallback to default steps
+      setStatusSteps([
+        { key: 'pending', label: 'Order Placed', description: 'Your order has been received', order: 1 },
+        { key: 'confirmed', label: 'Driver Assigned', description: 'A driver has been assigned to your order', order: 2 },
+        { key: 'en-route', label: 'On The Way', description: 'Your driver is en route to your location', order: 3 },
+        { key: 'arriving', label: 'Almost There', description: 'Your driver is arriving soon', order: 4 },
+        { key: 'delivered', label: 'Delivered', description: 'Your fuel has been delivered', order: 5 }
+      ]);
+    }
+  }, []);
+  
+  useEffect(() => {
+    // Update driver info when it changes
+    if (driverInfo) {
+      setDeliveryStatus(prev => ({
+        ...prev,
+        driverName: driverInfo.name,
+        eta: driverInfo.eta
+      }));
+    }
+  }, [driverInfo]);
   
   useEffect(() => {
     // Notify parent of initial status
@@ -32,26 +74,14 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
     // This would be an API call in a real app
     // Simulating delivery progress for demo - starting at 'en-route'
     const simulateDelivery = () => {
-      const statuses: DeliveryStatus[] = [
-        // 'pending' removed as we're starting at 'confirmed' now
-        // 'confirmed' is now the initial state, so we start with 'en-route'
-        { 
-          status: 'en-route', 
-          driverName: 'Michael Rodriguez',
-          driverLocation: '3.2 miles away',
-          eta: '15-20 minutes' 
-        },
-        { 
-          status: 'arriving', 
-          driverName: 'Michael Rodriguez',
-          driverLocation: '0.5 miles away',
-          eta: '2-5 minutes' 
-        },
-        { 
-          status: 'delivered', 
-          driverName: 'Michael Rodriguez',
-        }
-      ];
+      // Skip the first two steps (pending & confirmed) as we start at confirmed
+      const stepKeys = statusSteps.map(step => step.key);
+      const startIndex = stepKeys.indexOf('confirmed');
+      
+      if (startIndex < 0 || statusSteps.length < 2) return;
+      
+      // Get steps after 'confirmed'
+      const remainingSteps = stepKeys.slice(startIndex + 1);
       
       let index = 0;
       
@@ -62,17 +92,38 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
           return;
         }
         
-        if (index < statuses.length) {
-          const newStatus = statuses[index];
-          setDeliveryStatus(newStatus);
+        if (index < remainingSteps.length) {
+          const newStatus = remainingSteps[index];
+          
+          let updatedStatus: DeliveryStatus = {
+            status: newStatus,
+            driverName: deliveryStatus.driverName
+          };
+          
+          // Add specific details based on status
+          if (newStatus === 'en-route') {
+            updatedStatus = {
+              ...updatedStatus,
+              driverLocation: '3.2 miles away',
+              eta: '15-20 minutes'
+            };
+          } else if (newStatus === 'arriving') {
+            updatedStatus = {
+              ...updatedStatus,
+              driverLocation: '0.5 miles away',
+              eta: '2-5 minutes'
+            };
+          }
+          
+          setDeliveryStatus(updatedStatus);
           
           // Notify parent component about status change
           if (onStatusChange) {
-            onStatusChange(newStatus.status);
+            onStatusChange(newStatus);
           }
           
           // Mark as completed if we've reached the delivered state
-          if (newStatus.status === 'delivered') {
+          if (newStatus === 'delivered') {
             deliveryCompletedRef.current = true;
           }
           
@@ -85,20 +136,25 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
       return () => clearInterval(interval);
     };
     
-    simulateDelivery();
-  }, [orderId, onStatusChange]);
-  
-  const statusSteps = [
-    { key: 'pending', label: 'Order Placed' },
-    { key: 'confirmed', label: 'Driver Assigned' },
-    { key: 'en-route', label: 'On The Way' },
-    { key: 'arriving', label: 'Almost There' },
-    { key: 'delivered', label: 'Delivered' },
-  ];
+    if (statusSteps.length > 0) {
+      simulateDelivery();
+    }
+  }, [orderId, onStatusChange, statusSteps, deliveryStatus.driverName]);
   
   const getCurrentStepIndex = () => {
     return statusSteps.findIndex(step => step.key === deliveryStatus.status);
   };
+  
+  // If no steps are loaded yet, show loading indicator
+  if (statusSteps.length === 0) {
+    return (
+      <div className="glass-card p-5 animate-fade-in bg-white shadow-lg">
+        <div className="flex justify-center items-center h-40">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-navy-blue"></div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="glass-card p-5 space-y-6 animate-fade-in bg-white shadow-lg">
@@ -182,11 +238,8 @@ const TrackingMap: React.FC<TrackingMapProps> = ({ orderId, onStatusChange }) =>
       
       {/* Status message - Updated with darker blue */}
       <div className="text-center text-sm p-2 bg-gray-50 rounded-lg border border-navy-blue/10 text-navy-blue">
-        {deliveryStatus.status === 'pending' && 'Confirming your order...'}
-        {deliveryStatus.status === 'confirmed' && 'Driver has been assigned and is preparing for delivery.'}
-        {deliveryStatus.status === 'en-route' && `Driver is ${deliveryStatus.driverLocation} from your location.`}
-        {deliveryStatus.status === 'arriving' && 'Driver is arriving soon!'}
-        {deliveryStatus.status === 'delivered' && 'Fuel has been delivered. Thank you!'}
+        {statusSteps.find(step => step.key === deliveryStatus.status)?.description || 
+         'Tracking your delivery...'}
       </div>
     </div>
   );
