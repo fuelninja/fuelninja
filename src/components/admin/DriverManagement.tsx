@@ -17,7 +17,6 @@ const DriverManagement: React.FC<DriverManagementProps> = ({ onDriverAdded }) =>
     phone: '',
     licensePlate: '',
     vehicleModel: '',
-    vehicleColor: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -29,11 +28,10 @@ const DriverManagement: React.FC<DriverManagementProps> = ({ onDriverAdded }) =>
       phone: newDriver.phone,
       licensePlate: newDriver.licensePlate,
       vehicleModel: newDriver.vehicleModel,
-      vehicleColor: newDriver.vehicleColor,
     };
 
     onDriverAdded(driver);
-    setNewDriver({ name: '', phone: '', licensePlate: '', vehicleModel: '', vehicleColor: '' });
+    setNewDriver({ name: '', phone: '', licensePlate: '', vehicleModel: '' });
     setShowForm(false);
   };
 
@@ -80,13 +78,6 @@ const DriverManagement: React.FC<DriverManagementProps> = ({ onDriverAdded }) =>
               placeholder="Vehicle Model"
               value={newDriver.vehicleModel}
               onChange={(e) => setNewDriver({ ...newDriver, vehicleModel: e.target.value })}
-            />
-          </div>
-          <div>
-            <Input
-              placeholder="Vehicle Color"
-              value={newDriver.vehicleColor}
-              onChange={(e) => setNewDriver({ ...newDriver, vehicleColor: e.target.value })}
             />
           </div>
           <div className="flex gap-2">

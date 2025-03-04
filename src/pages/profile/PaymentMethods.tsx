@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '@/components/layout/Header';
 import BottomNav from '@/components/layout/BottomNav';
@@ -30,16 +29,28 @@ const PaymentMethods: React.FC = () => {
     const userData = DataService.getUserData();
     
     if (userData.paymentMethods && userData.paymentMethods.length > 0) {
-      const formattedMethods = userData.paymentMethods.map((method, index) => ({
-        id: Date.now() + index,
-        type: method.cardName.includes('Visa') ? 'Visa' : 
-              method.cardName.includes('Mastercard') ? 'Mastercard' :
-              method.cardName.includes('American Express') ? 'American Express' :
-              method.cardName.includes('Discover') ? 'Discover' : 'Credit Card',
-        last4: method.cardNumberLast4,
-        expiry: method.expDate,
-        isDefault: index === 0 // First card is default
-      }));
+      const formattedMethods = userData.paymentMethods.map((method, index) => {
+        // Convert string to valid PaymentMethod type
+        let cardType: 'Visa' | 'Mastercard' | 'American Express' | 'Discover' | 'Credit Card' = 'Credit Card';
+        
+        if (method.cardName.includes('Visa')) {
+          cardType = 'Visa';
+        } else if (method.cardName.includes('Mastercard')) {
+          cardType = 'Mastercard';
+        } else if (method.cardName.includes('American Express')) {
+          cardType = 'American Express';
+        } else if (method.cardName.includes('Discover')) {
+          cardType = 'Discover';
+        }
+        
+        return {
+          id: Date.now() + index,
+          type: cardType,
+          last4: method.cardNumberLast4,
+          expiry: method.expDate,
+          isDefault: index === 0 // First card is default
+        };
+      });
       
       setPaymentMethods(formattedMethods);
     }
@@ -160,7 +171,7 @@ const PaymentMethods: React.FC = () => {
   };
   
   // Get card type based on card number
-  const getCardType = (cardNumber: string): string => {
+  const getCardType = (cardNumber: string): PaymentMethod['type'] => {
     const firstDigit = cardNumber.charAt(0);
     const firstTwoDigits = parseInt(cardNumber.substring(0, 2));
     const firstFourDigits = parseInt(cardNumber.substring(0, 4));
@@ -222,7 +233,7 @@ const PaymentMethods: React.FC = () => {
     
     const newPayment: PaymentMethod = {
       id: Date.now(),
-      type: cardType as PaymentMethod['type'],
+      type: cardType,
       last4,
       expiry: formData.expiryDate,
       isDefault: formData.isDefault,
@@ -270,7 +281,7 @@ const PaymentMethods: React.FC = () => {
     
     const updatedPayment: PaymentMethod = {
       ...currentPayment,
-      type: cardType as PaymentMethod['type'],
+      type: cardType,
       last4,
       expiry: formData.expiryDate || currentPayment.expiry,
       isDefault: formData.isDefault,
