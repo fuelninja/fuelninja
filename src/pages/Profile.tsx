@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import Header from '@/components/layout/Header';
@@ -7,7 +6,7 @@ import {
   User, MapPin, CreditCard, History, 
   Receipt, HelpCircle, LogOut, Settings
 } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
+import { useAuth } from '@/contexts/auth';
 import { toast } from "sonner";
 
 const Profile = () => {
@@ -59,7 +58,6 @@ const Profile = () => {
     }
   ];
   
-  // Add admin dashboard link if user is an admin
   if (isAdmin) {
     menuItems.push({
       icon: Settings,
