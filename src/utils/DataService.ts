@@ -18,6 +18,7 @@ export interface OrderData {
   status: string;
   createdAt: number;
   deliveredAt?: number;
+  userId?: string; // Added user ID for tracking
 }
 
 export interface UserData {
@@ -46,6 +47,20 @@ class DataService {
     return DataService.instance;
   }
   
+  // Get current user ID from auth
+  private getCurrentUserId(): string | null {
+    try {
+      const authData = localStorage.getItem('fuelninja-auth');
+      if (!authData) return null;
+      
+      const user = JSON.parse(authData);
+      return user.id || null;
+    } catch (error) {
+      console.error('Error getting current user:', error);
+      return null;
+    }
+  }
+  
   // Get all orders
   public getOrders(): OrderData[] {
     try {
@@ -53,6 +68,20 @@ class DataService {
       return ordersJson ? JSON.parse(ordersJson) : [];
     } catch (error) {
       console.error('Error getting orders:', error);
+      return [];
+    }
+  }
+  
+  // Get orders for current user
+  public getUserOrders(): OrderData[] {
+    try {
+      const userId = this.getCurrentUserId();
+      if (!userId) return [];
+      
+      const allOrders = this.getOrders();
+      return allOrders.filter(order => order.userId === userId);
+    } catch (error) {
+      console.error('Error getting user orders:', error);
       return [];
     }
   }
@@ -72,6 +101,12 @@ class DataService {
   public saveOrder(orderData: OrderData): boolean {
     try {
       const orders = this.getOrders();
+      
+      // Add current user ID if authenticated
+      const userId = this.getCurrentUserId();
+      if (userId) {
+        orderData.userId = userId;
+      }
       
       // Check if order already exists
       const existingOrderIndex = orders.findIndex(order => order.orderId === orderData.orderId);
@@ -122,8 +157,19 @@ class DataService {
   // Get user data
   public getUserData(): UserData {
     try {
-      const userJson = localStorage.getItem('fuelninja-user');
-      return userJson ? JSON.parse(userJson) : {};
+      // First try to get user-specific data
+      const userId = this.getCurrentUserId();
+      if (userId) {
+        const userDataKey = `fuelninja-user-${userId}`;
+        const userJson = localStorage.getItem(userDataKey);
+        if (userJson) {
+          return JSON.parse(userJson);
+        }
+      }
+      
+      // Fall back to legacy data
+      const legacyData = localStorage.getItem('fuelninja-user');
+      return legacyData ? JSON.parse(legacyData) : {};
     } catch (error) {
       console.error('Error getting user data:', error);
       return {};
@@ -133,6 +179,9 @@ class DataService {
   // Save user data
   public saveUserData(userData: UserData): boolean {
     try {
+      const userId = this.getCurrentUserId();
+      const storageKey = userId ? `fuelninja-user-${userId}` : 'fuelninja-user';
+      
       const existingData = this.getUserData();
       
       const updatedData = {
@@ -140,7 +189,7 @@ class DataService {
         ...userData
       };
       
-      localStorage.setItem('fuelninja-user', JSON.stringify(updatedData));
+      localStorage.setItem(storageKey, JSON.stringify(updatedData));
       return true;
     } catch (error) {
       console.error('Error saving user data:', error);
@@ -191,6 +240,13 @@ class DataService {
   public clearAllData(): void {
     localStorage.removeItem('fuelninja-orders');
     localStorage.removeItem('fuelninja-user');
+    
+    // Also clear user-specific data
+    const userId = this.getCurrentUserId();
+    if (userId) {
+      localStorage.removeItem(`fuelninja-user-${userId}`);
+    }
+    
     toast("All data has been cleared");
   }
 }
