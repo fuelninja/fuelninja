@@ -7,6 +7,8 @@ import { ChevronLeft, FileText, Download, Calendar, Fuel, MapPin, CreditCard } f
 import { useNavigate, useLocation } from 'react-router-dom';
 import { generateReceiptPDF, ReceiptData } from '@/utils/pdfGenerator';
 import { toast } from '@/hooks/use-toast';
+import DataService, { OrderData } from '@/utils/DataService';
+import { format } from 'date-fns';
 
 const Receipts: React.FC = () => {
   const navigate = useNavigate();
@@ -15,67 +17,62 @@ const Receipts: React.FC = () => {
   const orderId = queryParams.get('order');
   
   const [selectedReceipt, setSelectedReceipt] = useState<string | null>(orderId);
+  const [receipts, setReceipts] = useState<ReceiptData[]>([]);
   
-  // Mock receipts data - would come from user profile in a real app
-  const receipts = [
-    {
-      id: 'ORD-001234',
-      date: 'May 15, 2023',
-      time: '2:30 PM',
-      status: 'Completed',
+  useEffect(() => {
+    // Fetch user's orders and convert to receipt format
+    const userOrders = DataService.getUserOrders();
+    const formattedReceipts = userOrders.map(orderToReceiptData);
+    setReceipts(formattedReceipts);
+  }, []);
+  
+  // Convert OrderData to ReceiptData format
+  const orderToReceiptData = (order: OrderData): ReceiptData => {
+    const fuelCost = order.amount * parseFloat(order.price);
+    const serviceFee = 6.99;
+    const discount = order.status === 'delivered' ? -2.99 : 0;
+    const subtotal = fuelCost + serviceFee + discount;
+    const tax = subtotal * 0.0825; // 8.25% tax rate
+    const total = subtotal + tax;
+    
+    const orderDate = new Date(order.createdAt);
+    
+    return {
+      id: order.orderId,
+      date: format(orderDate, 'MMMM d, yyyy'),
+      time: format(orderDate, 'h:mm a'),
+      status: order.status.charAt(0).toUpperCase() + order.status.slice(1),
       items: [
-        { description: 'Regular Unleaded Gasoline', quantity: '8 gallons', price: 27.92 },
-        { description: 'Service Fee', quantity: '1', price: 6.99 },
-        { description: 'Delivery Discount', quantity: '1', price: -2.99 }
+        { 
+          description: `${order.fuelType} Fuel`, 
+          quantity: `${order.amount} gallons`, 
+          price: fuelCost 
+        },
+        { 
+          description: 'Service Fee', 
+          quantity: '1', 
+          price: serviceFee 
+        },
+        ...(discount !== 0 ? [{ 
+          description: 'Delivery Discount', 
+          quantity: '1', 
+          price: discount 
+        }] : [])
       ],
-      subtotal: 31.92,
-      tax: 2.64,
-      total: 34.56,
-      paymentMethod: 'Visa •••• 4242',
-      deliveryAddress: '123 Main St, Houston, TX',
-      vehicle: '2020 Toyota Camry (Silver)'
-    },
-    {
-      id: 'ORD-001122',
-      date: 'April 28, 2023',
-      time: '10:15 AM',
-      status: 'Completed',
-      items: [
-        { description: 'Regular Unleaded Gasoline', quantity: '12 gallons', price: 41.88 },
-        { description: 'Service Fee', quantity: '1', price: 6.99 },
-        { description: 'Delivery Discount', quantity: '1', price: -0.99 }
-      ],
-      subtotal: 47.88,
-      tax: 3.95,
-      total: 51.83,
-      paymentMethod: 'Visa •••• 4242',
-      deliveryAddress: '456 Corporate Ave, Houston, TX',
-      vehicle: '2020 Toyota Camry (Silver)'
-    },
-    {
-      id: 'ORD-000987',
-      date: 'April 10, 2023',
-      time: '3:45 PM',
-      status: 'Completed',
-      items: [
-        { description: 'Regular Unleaded Gasoline', quantity: '5 gallons', price: 17.45 },
-        { description: 'Service Fee', quantity: '1', price: 6.99 },
-        { description: 'Delivery Discount', quantity: '1', price: -4.49 }
-      ],
-      subtotal: 19.95,
-      tax: 1.65,
-      total: 21.60,
-      paymentMethod: 'Mastercard •••• 5555',
-      deliveryAddress: '789 Family Rd, Katy, TX',
-      vehicle: '2019 Honda CR-V (Black)'
-    }
-  ];
+      subtotal,
+      tax,
+      total,
+      paymentMethod: 'Card •••• 4242', // Default payment method since actual payment info isn't stored
+      deliveryAddress: order.deliveryAddress,
+      vehicle: `${order.carInfo.year} ${order.carInfo.make} ${order.carInfo.model} (${order.carInfo.color})`
+    };
+  };
   
   const selectedReceiptData = receipts.find(receipt => receipt.id === selectedReceipt);
   
   const handleDownloadReceipt = () => {
     if (selectedReceiptData) {
-      const pdf = generateReceiptPDF(selectedReceiptData as ReceiptData);
+      const pdf = generateReceiptPDF(selectedReceiptData);
       pdf.save(`FuelNinja_Receipt_${selectedReceiptData.id}.pdf`);
       toast({
         title: "Receipt Downloaded",
@@ -204,34 +201,48 @@ const Receipts: React.FC = () => {
             </div>
           ) : (
             <div className="glass-card divide-y divide-gray-100 animate-fade-in">
-              {receipts.map((receipt) => (
-                <button
-                  key={receipt.id}
-                  className="w-full p-4 flex items-start text-left hover:bg-gray-50 transition-colors"
-                  onClick={() => setSelectedReceipt(receipt.id)}
-                >
-                  <div className="bg-gray-100 p-2 rounded-full mr-3">
-                    <FileText className="h-5 w-5 text-ninja-red" />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <div>
-                        <h3 className="font-medium">{receipt.id}</h3>
-                        <p className="text-sm text-gray-600">{receipt.date}</p>
-                      </div>
-                      <p className="font-medium">${receipt.total.toFixed(2)}</p>
+              {receipts.length > 0 ? (
+                receipts.map((receipt) => (
+                  <button
+                    key={receipt.id}
+                    className="w-full p-4 flex items-start text-left hover:bg-gray-50 transition-colors"
+                    onClick={() => setSelectedReceipt(receipt.id)}
+                  >
+                    <div className="bg-gray-100 p-2 rounded-full mr-3">
+                      <FileText className="h-5 w-5 text-ninja-red" />
                     </div>
                     
-                    <div className="flex items-center gap-2 mt-2">
-                      <Fuel className="h-4 w-4 text-gray-500" />
-                      <p className="text-sm text-gray-600">
-                        {receipt.items[0].quantity} of fuel
-                      </p>
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <div>
+                          <h3 className="font-medium">{receipt.id.substring(0, 8)}</h3>
+                          <p className="text-sm text-gray-600">{receipt.date}</p>
+                        </div>
+                        <p className="font-medium">${receipt.total.toFixed(2)}</p>
+                      </div>
+                      
+                      <div className="flex items-center gap-2 mt-2">
+                        <Fuel className="h-4 w-4 text-gray-500" />
+                        <p className="text-sm text-gray-600">
+                          {receipt.items[0].quantity} of fuel
+                        </p>
+                      </div>
                     </div>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <FileText className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-gray-700">No receipts yet</h3>
+                  <p className="text-gray-500 mt-1">Complete an order to generate a receipt</p>
+                  <Button 
+                    className="mt-4" 
+                    onClick={() => navigate('/book')}
+                  >
+                    Book Your First Delivery
+                  </Button>
+                </div>
+              )}
             </div>
           )}
         </div>
