@@ -1,7 +1,8 @@
 
 import React from 'react';
-import { RefreshCw, LogOut } from 'lucide-react';
+import { RefreshCw, LogOut, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
 
 interface AdminHeaderProps {
   onRefresh: () => void;
@@ -16,6 +17,16 @@ const AdminHeader: React.FC<AdminHeaderProps> = ({ onRefresh, onLogout, isLoadin
         <h1 className="text-xl font-bold text-ninja-blue">FuelNinja Admin Console</h1>
         
         <div className="flex items-center gap-4">
+          <Link to="/">
+            <Button 
+              variant="outline" 
+              size="sm"
+            >
+              <Home className="w-4 h-4 mr-2" />
+              Return to Home
+            </Button>
+          </Link>
+          
           <Button 
             variant="outline" 
             size="sm"
