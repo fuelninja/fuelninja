@@ -1,9 +1,8 @@
-
 import React, { useState, useEffect } from 'react';
 import { OrderData } from '@/utils/DataService';
 import { DeliveryDriverInfo } from '@/utils/types';
 import { format } from 'date-fns';
-import { MapPin, Calendar, User } from 'lucide-react';
+import { MapPin, Calendar, User, Truck, Navigation } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   Dialog,
@@ -22,6 +21,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import OrderStatusBadge from './OrderStatusBadge';
+import DriverManagement from './DriverManagement';
 
 interface OrderDetailDialogProps {
   open: boolean;
@@ -65,13 +65,28 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
       }
     }
   }, [open, order]);
+
+  const handleAddDriver = (newDriver: DeliveryDriverInfo) => {
+    try {
+      const configData = localStorage.getItem('fuelninja-tracking-config') || '{}';
+      const config = JSON.parse(configData);
+      const updatedDrivers = [...(config.activeDrivers || []), newDriver];
+      
+      localStorage.setItem('fuelninja-tracking-config', JSON.stringify({
+        ...config,
+        activeDrivers: updatedDrivers
+      }));
+      
+      setAvailableDrivers(updatedDrivers);
+    } catch (error) {
+      console.error('Error adding driver:', error);
+    }
+  };
   
   const formatTimestamp = (timestamp: number) => {
     return format(new Date(timestamp), 'MMM d, yyyy h:mm a');
   };
 
-  if (!order) return null;
-  
   const assignDriver = () => {
     if (!selectedDriverIndex || !order) return;
     
@@ -87,13 +102,23 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
         // Update order status to confirmed if it's still pending
         if (order.status === 'pending') {
           onStatusChange(order.orderId, 'confirmed');
-        } else {
-          // Force dialog to close and reopen to see changes
-          onOpenChange(false);
-          setTimeout(() => onOpenChange(true), 100);
         }
       }
     });
+  };
+
+  if (!order) return null;
+
+  const canProgress = (currentStatus: string): boolean => {
+    const statusOrder = ['pending', 'confirmed', 'en-route', 'arriving', 'delivered'];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    return currentIndex >= 0 && currentIndex < statusOrder.length - 1;
+  };
+
+  const getNextStatus = (currentStatus: string): string => {
+    const statusOrder = ['pending', 'confirmed', 'en-route', 'arriving', 'delivered'];
+    const currentIndex = statusOrder.indexOf(currentStatus);
+    return statusOrder[currentIndex + 1];
   };
 
   return (
@@ -116,39 +141,64 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
           
           {/* Driver Assignment Section */}
           <div>
-            <h3 className="font-semibold mb-2">Assign Driver</h3>
-            <div className="flex gap-2">
-              <Select 
-                value={selectedDriverIndex} 
-                onValueChange={setSelectedDriverIndex}
-              >
-                <SelectTrigger className="flex-1">
-                  <SelectValue placeholder="Select a driver" />
-                </SelectTrigger>
-                <SelectContent>
-                  {availableDrivers.length === 0 ? (
-                    <SelectItem value="none" disabled>
-                      No drivers available
-                    </SelectItem>
-                  ) : (
-                    availableDrivers.map((driver, index) => (
-                      <SelectItem key={index} value={index.toString()}>
-                        {driver.name}
+            <h3 className="font-semibold mb-2">Manage Driver</h3>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Select 
+                  value={selectedDriverIndex} 
+                  onValueChange={setSelectedDriverIndex}
+                >
+                  <SelectTrigger className="flex-1">
+                    <SelectValue placeholder="Select a driver" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {availableDrivers.length === 0 ? (
+                      <SelectItem value="none" disabled>
+                        No drivers available
                       </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              <Button onClick={assignDriver} disabled={!selectedDriverIndex}>
-                Assign
-              </Button>
-            </div>
-            
-            {order.driverInfo && (
-              <div className="mt-2 text-sm bg-green-50 text-green-700 p-2 rounded flex items-center">
-                <User className="h-4 w-4 mr-2" />
-                Currently assigned: {order.driverInfo.name}
+                    ) : (
+                      availableDrivers.map((driver, index) => (
+                        <SelectItem key={index} value={index.toString()}>
+                          {driver.name}
+                        </SelectItem>
+                      ))
+                    )}
+                  </SelectContent>
+                </Select>
+                <Button onClick={assignDriver} disabled={!selectedDriverIndex}>
+                  <Truck className="mr-2 h-4 w-4" />
+                  Assign
+                </Button>
               </div>
+              
+              <DriverManagement onDriverAdded={handleAddDriver} />
+              
+              {order.driverInfo && (
+                <div className="mt-2 text-sm bg-green-50 text-green-700 p-2 rounded flex items-center">
+                  <User className="h-4 w-4 mr-2" />
+                  Currently assigned: {order.driverInfo.name}
+                </div>
+              )}
+            </div>
+          </div>
+          
+          <Separator />
+          
+          {/* Manual Status Progress Controls */}
+          <div>
+            <h3 className="font-semibold mb-2">Update Delivery Status</h3>
+            {canProgress(order.status) ? (
+              <Button 
+                onClick={() => onStatusChange(order.orderId, getNextStatus(order.status))}
+                className="w-full"
+              >
+                <Navigation className="mr-2 h-4 w-4" />
+                Progress to {getNextStatus(order.status)}
+              </Button>
+            ) : (
+              <Button disabled className="w-full">
+                Order Complete
+              </Button>
             )}
           </div>
           
@@ -199,35 +249,7 @@ const OrderDetailDialog: React.FC<OrderDetailDialogProps> = ({
           </div>
         </div>
 
-        <DialogFooter className="flex flex-col sm:flex-row gap-2">
-          {order.status === 'pending' && (
-            <Button 
-              onClick={() => onStatusChange(order.orderId, 'in_progress')}
-              className="w-full sm:w-auto"
-            >
-              Start Delivery
-            </Button>
-          )}
-          
-          {order.status === 'in_progress' && (
-            <Button 
-              onClick={() => onStatusChange(order.orderId, 'delivered')}
-              className="w-full sm:w-auto"
-            >
-              Mark as Delivered
-            </Button>
-          )}
-          
-          {order.status === 'delivered' && (
-            <Button 
-              variant="outline" 
-              disabled
-              className="w-full sm:w-auto"
-            >
-              Order Completed
-            </Button>
-          )}
-          
+        <DialogFooter>
           <Button 
             variant="outline" 
             onClick={() => onOpenChange(false)}
